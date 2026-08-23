@@ -1,10 +1,10 @@
 import {Deck, OrbitView, OrthographicView} from '@deck.gl/core';
-import {PathLayer, ScatterplotLayer} from '@deck.gl/layers';
-import {HexagonLayer} from '@deck.gl/aggregation-layers';
+import {ArcLayer, PathLayer, PolygonLayer, ScatterplotLayer, TextLayer} from '@deck.gl/layers';
+import {ContourLayer, GridLayer, HeatmapLayer, HexagonLayer} from '@deck.gl/aggregation-layers';
 import {TripsLayer} from '@deck.gl/geo-layers';
 import './style.css';
 
-type SceneName = 'hexagons' | 'trips' | 'flows';
+type SceneName = 'hexagons' | 'trips' | 'flows' | 'grid-cells' | 'heat-islands' | 'contour-pressure' | 'migration-arcs' | 'parcel-zoning' | 'constellation' | 'river-network' | 'sensor-field' | 'label-atlas';
 type Point = {position: [number, number]; weight: number};
 type Trip = {path: [number, number][]; timestamps: number[]; cohort: number};
 
@@ -23,7 +23,16 @@ const scenes: Record<SceneName, {title: string; subtitle: string; note: string}>
     title: 'Distributed connection arcs',
     subtitle: 'Directed flows use height, width, and color to encode route intensity.',
     note: 'Curved PathLayer routes and ScatterplotLayer nodes share a planar camera with no basemap dependency.'
-  }
+  },
+  'grid-cells': {title:'Regional capacity grid',subtitle:'A regular GPU aggregation exposes capacity and local variance.',note:'GridLayer encodes weight as both elevation and a sequential color ramp.'},
+  'heat-islands': {title:'Overlapping heat islands',subtitle:'Several dense sources merge into one continuous spatial field.',note:'HeatmapLayer blends 75,000 weighted samples without a basemap.'},
+  'contour-pressure': {title:'Pressure threshold atlas',subtitle:'Nested iso-bands turn point samples into readable scalar regions.',note:'ContourLayer extracts threshold bands and isolines on the GPU.'},
+  'migration-arcs': {title:'Migration corridor arcs',subtitle:'Origin-destination volume controls arc width, height, and color.',note:'ArcLayer compares long-range corridors while node glyphs preserve hubs.'},
+  'parcel-zoning': {title:'Synthetic parcel zoning',subtitle:'Land-use classes, block geometry, and intensity become an isometric district.',note:'PolygonLayer extrudes deterministic parcels by floor-area intensity.'},
+  constellation: {title:'Object constellation field',subtitle:'Twenty thousand objects preserve clusters, anomalies, and local density.',note:'ScatterplotLayer combines radius, color, outline, and picking.'},
+  'river-network': {title:'Branching river network',subtitle:'Stream order controls path width while tributaries preserve topology.',note:'PathLayer renders a deterministic branching hierarchy with rounded joints.'},
+  'sensor-field': {title:'Multivariate sensor field',subtitle:'Position, radius, fill, and outline distinguish health and magnitude.',note:'ScatterplotLayer composes four visual channels without a geographic tile source.'},
+  'label-atlas': {title:'Annotated feature atlas',subtitle:'Labels, leader relationships, and feature classes share one coordinate space.',note:'TextLayer and ScatterplotLayer form a dense but deterministic annotation field.'}
 };
 
 function pseudo(index: number, salt = 0): number {
@@ -218,7 +227,7 @@ if (scene === 'hexagons') {
     paused = !paused;
     (event.currentTarget as HTMLButtonElement).textContent = paused ? 'Resume animation' : 'Pause animation';
   });
-} else {
+} else if (scene === 'flows') {
   itemCount = flows.length;
   deck = new Deck({
     ...commonProps(), views: new OrthographicView({clearColor: [0, 0, 0, 0]}),
@@ -237,6 +246,22 @@ if (scene === 'hexagons') {
       })
     ]
   });
+} else {
+  const points=makePoints(scene==='heat-islands'?75_000:scene==='constellation'?20_000:18_000);
+  const parcels=Array.from({length:180},(_,i)=>{const x=(i%18-9)*5.4,y=(Math.floor(i/18)-5)*5.2,w=3.3+(i%4)*.35,h=3.1+(i%3)*.5;return {polygon:[[x-w,y-h],[x+w,y-h],[x+w,y+h],[x-w,y+h]],height:2+((i*17)%18),kind:i%5};});
+  const hubs=networkNodes.map((d,i)=>({...d,value:30+(i*37)%170}));
+  const branches=Array.from({length:90},(_,i)=>{const order=1+i%5,x=(i%9-4)*12,y=34-Math.floor(i/9)*7;return {order,path:Array.from({length:18},(_,k):[number,number]=>[x+(k-9)*2.4/order+Math.sin(k*.7+i)*2,y-k*2.5+Math.sin(k*.3+i)*4])};});
+  let layers:any[]=[];let view:any={target:[0,0,0],zoom:2.7,minZoom:1,maxZoom:7};itemCount=points.length;
+  if(scene==='grid-cells')layers=[new GridLayer<Point>({id:scene,data:points,getPosition:d=>d.position,getColorWeight:d=>d.weight,getElevationWeight:d=>d.weight,cellSize:3.2,extruded:true,elevationScale:.12,colorRange:[[18,48,83],[36,91,125],[62,151,154],[84,214,198],[255,209,102],[255,111,145]],opacity:.86})];
+  if(scene==='heat-islands')layers=[new HeatmapLayer<Point>({id:scene,data:points,getPosition:d=>d.position,getWeight:d=>d.weight,radiusPixels:48,intensity:1.6,threshold:.04,colorRange:[[14,29,52,0],[41,72,122,120],[84,214,198,190],[255,209,102,220],[255,111,145,245]]})];
+  if(scene==='contour-pressure')layers=[new ContourLayer<Point>({id:scene,data:points,getPosition:d=>d.position,getWeight:d=>d.weight,cellSize:5,contours:[{threshold:1,color:[84,214,198],strokeWidth:2},{threshold:3,color:[123,156,255],strokeWidth:3},{threshold:[5,9],color:[255,111,145,100]},{threshold:[9,14],color:[255,209,102,110]}]})];
+  if(scene==='migration-arcs'){itemCount=flows.length;layers=[new ArcLayer<any>({id:scene,data:flows,getSourcePosition:d=>d.source.position,getTargetPosition:d=>d.target.position,getSourceColor:d=>d.value>100?[255,111,145]:[84,214,198],getTargetColor:[255,209,102],getWidth:d=>1+d.value/45,widthMinPixels:1.5,greatCircle:false,opacity:.7}),new ScatterplotLayer({id:'hubs',data:hubs,getPosition:(d:any)=>d.position,getRadius:(d:any)=>1+d.value/45,radiusMinPixels:4,getFillColor:[235,247,255],getLineColor:[84,214,198],stroked:true,lineWidthMinPixels:2})];}
+  if(scene==='parcel-zoning'){itemCount=parcels.length;layers=[new PolygonLayer({id:scene,data:parcels,getPolygon:(d:any)=>d.polygon,getElevation:(d:any)=>d.height,extruded:true,getFillColor:(d:any)=>[[84,214,198],[123,156,255],[255,111,145],[255,209,102],[184,137,255]][d.kind] as [number,number,number],getLineColor:[220,242,250],lineWidthMinPixels:1,wireframe:true,opacity:.62})];view={target:[0,0,0],rotationX:38,rotationOrbit:28,zoom:3.1};}
+  if(scene==='constellation')layers=[new ScatterplotLayer<Point>({id:scene,data:points,getPosition:d=>d.position,getRadius:d=>.4+d.weight*.5,radiusMinPixels:1,radiusMaxPixels:9,getFillColor:d=>d.weight>2?[255,111,145]:d.weight>1.3?[255,209,102]:[84,214,198],opacity:.55,stroked:true,getLineColor:[220,244,250],lineWidthMinPixels:.4})];
+  if(scene==='river-network'){itemCount=branches.length;layers=[new PathLayer({id:scene,data:branches,getPath:(d:any)=>d.path,getWidth:(d:any)=>d.order*.9,widthMinPixels:1,getColor:(d:any)=>d.order>3?[84,214,198]:[72,120+d.order*20,190],rounded:true,jointRounded:true,opacity:.72})];}
+  if(scene==='sensor-field')layers=[new ScatterplotLayer<Point>({id:scene,data:points.slice(0,2500),getPosition:d=>d.position,getRadius:d=>.8+d.weight*1.2,radiusMinPixels:2,radiusMaxPixels:14,getFillColor:d=>d.weight>2.2?[255,111,145]:d.weight>1.2?[255,209,102]:[84,214,198],getLineColor:d=>d.weight>2.2?[255,230,235]:[180,220,235],stroked:true,lineWidthMinPixels:1.2,opacity:.7})];
+  if(scene==='label-atlas'){itemCount=hubs.length;layers=[new ScatterplotLayer({id:'features',data:hubs,getPosition:(d:any)=>d.position,getRadius:(d:any)=>2+d.value/90,radiusMinPixels:4,getFillColor:(d:any)=>d.value>100?[255,111,145]:[84,214,198]}),new TextLayer({id:'labels',data:hubs,getPosition:(d:any)=>d.position,getText:(d:any)=>d.name,getSize:16,getColor:[225,242,250],getPixelOffset:[0,-18],fontFamily:'Avenir Next',fontWeight:600,outlineWidth:3,outlineColor:[8,18,32,220]})];}
+  const orbit=scene==='parcel-zoning';deck=new Deck({...commonProps(),views:orbit?new OrbitView({orbitAxis:'Y',clearColor:[0,0,0,0]}):new OrthographicView({clearColor:[0,0,0,0]}),initialViewState:view,layers});
 }
 
 document.querySelector('#items')!.textContent = itemCount >= 1000 ? `${(itemCount / 1000).toFixed(itemCount >= 10000 ? 0 : 1)}k` : String(itemCount);

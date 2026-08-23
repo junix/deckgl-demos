@@ -1,0 +1,14 @@
+[
+  {"id":"hexagons","use":"aggregation","family":"aggregation","question":"Where does urban activity concentrate in 3D?","complexity":"advanced","tags":["hexagon","gpu","density"]},
+  {"id":"trips","use":"temporal motion","family":"temporal motion","question":"How do directional mobility waves evolve through time?","complexity":"advanced","tags":["trips","animation","paths"]},
+  {"id":"flows","use":"network flow","family":"network flow","question":"Which distributed routes carry the most traffic?","complexity":"advanced","tags":["paths","network","flow"]},
+  {"id":"grid-cells","use":"aggregation","family":"aggregation","question":"How does a regular grid compare density and elevation?","complexity":"advanced","tags":["grid","aggregation","3d"]},
+  {"id":"heat-islands","use":"continuous density","family":"continuous density","question":"Where do several heat sources overlap spatially?","complexity":"advanced","tags":["heatmap","density","field"]},
+  {"id":"contour-pressure","use":"scalar field","family":"scalar field","question":"Which pressure thresholds define nested regions?","complexity":"advanced","tags":["contour","threshold","field"]},
+  {"id":"migration-arcs","use":"origin-destination","family":"origin-destination","question":"How do migration corridors connect regional hubs?","complexity":"advanced","tags":["arc","origin-destination","routes"]},
+  {"id":"parcel-zoning","use":"polygon map","family":"polygon map","question":"How can land-use classes and intensity coexist?","complexity":"advanced","tags":["polygon","zoning","extrusion"]},
+  {"id":"constellation","use":"point cloud","family":"point cloud","question":"How can thousands of objects preserve clusters and outliers?","complexity":"advanced","tags":["scatterplot","clusters","selection"]},
+  {"id":"river-network","use":"path topology","family":"path topology","question":"How can branching stream order drive width and color?","complexity":"advanced","tags":["paths","river","topology"]},
+  {"id":"sensor-field","use":"multivariate glyphs","family":"multivariate glyphs","question":"How can size, color, and position encode sensor state together?","complexity":"advanced","tags":["scatterplot","sensors","multivariate"]},
+  {"id":"label-atlas","use":"annotation","family":"annotation","question":"How can dense labels remain attached to spatial features?","complexity":"advanced","tags":["text","labels","atlas"]}
+]

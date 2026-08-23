@@ -10,6 +10,8 @@ const chrome = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const vite = resolve(root, 'node_modules/vite/bin/vite.js');
 const server = spawn(process.execPath, [vite, 'preview', '--host', '127.0.0.1', '--port', String(port)], {cwd: root, stdio: 'pipe'});
 const failures = [];
+const catalog = JSON.parse(await readFile(resolve(root, 'catalog.json'), 'utf8'));
+if (catalog.length < 12) throw new Error('reference library requires at least 12 scenes');
 
 async function waitForServer() {
   for (let attempt = 0; attempt < 80; attempt += 1) {
@@ -50,7 +52,7 @@ try {
   await mkdir(resolve(root, 'out'), {recursive: true});
   await waitForServer();
   const browser = await chromium.launch({headless: true, executablePath: chrome, args: ['--use-angle=metal']});
-  for (const scene of ['hexagons', 'trips', 'flows']) {
+  for (const {id: scene} of catalog) {
     const page = await browser.newPage({viewport: {width: 1280, height: 820}, deviceScaleFactor: 1});
     const consoleErrors = [];
     page.on('console', message => { if (message.type() === 'error') consoleErrors.push(message.text()); });
@@ -104,4 +106,4 @@ if (failures.length) {
   console.error(failures.join('\n'));
   process.exit(1);
 }
-console.log('deck.gl validation passed: 3 offline scenes + transparent PNG exports');
+console.log(`deck.gl validation passed: ${catalog.length} offline scenes + transparent PNG exports`);
