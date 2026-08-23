@@ -1,0 +1,28 @@
+{
+  "name": "deckgl-examples",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc --noEmit && vite build",
+    "render": "node scripts/validate.mjs --render-only",
+    "validate": "node scripts/validate.mjs",
+    "test": "npm run typecheck && npm run build && npm run validate"
+  },
+  "dependencies": {
+    "@deck.gl/aggregation-layers": "9.3.10",
+    "@deck.gl/core": "9.3.10",
+    "@deck.gl/geo-layers": "9.3.10",
+    "@deck.gl/layers": "9.3.10"
+  },
+  "devDependencies": {
+    "@types/node": "26.0.0",
+    "@types/pngjs": "6.0.5",
+    "playwright-core": "1.62.1",
+    "pngjs": "7.0.0",
+    "typescript": "5.9.3",
+    "vite": "8.2.2"
+  }
+}
