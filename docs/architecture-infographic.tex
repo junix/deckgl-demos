@@ -1,0 +1,433 @@
+\documentclass[border=10pt,varwidth=23cm]{standalone}
+% deckgl-examples 架构信息图
+% 主题：12 个纯本地 deck.gl 参考场景 · 零外部依赖 · 自动化视觉验证
+% 读法：从上到下，先看场景家族矩阵，再沿左侧主路径读「数据→渲染→验证」闭环。
+\usepackage[UTF8,fontset=none]{ctex}
+\IfFontExistsTF{Source Han Serif SC}{
+  \setmainfont[BoldFont={Source Han Serif SC Bold}]{Source Han Serif SC}
+  \setsansfont[BoldFont={Source Han Serif SC Bold}]{Source Han Serif SC}
+  \setCJKmainfont[BoldFont={Source Han Serif SC Bold}]{Source Han Serif SC}
+  \setCJKsansfont[BoldFont={Source Han Serif SC Bold}]{Source Han Serif SC}
+}{
+  \PackageWarningNoLine{tikz-infographic}{Source Han Serif SC not found; using Fandol}
+  \setCJKmainfont[BoldFont={FandolSong-Bold}]{FandolSong-Regular}
+  \setCJKsansfont[BoldFont={FandolHei-Bold}]{FandolHei-Regular}
+}
+\IfFontExistsTF{Sarasa Mono SC}{
+  \setmonofont{Sarasa Mono SC}
+  \setCJKmonofont{Sarasa Mono SC}
+}{
+  \PackageWarningNoLine{tikz-infographic}{Sarasa Mono SC not found; using TeX defaults}
+  \setmonofont{Latin Modern Mono}
+  \setCJKmonofont{FandolFang-Regular}
+}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{listings}
+\usetikzlibrary{arrows.meta,backgrounds,calc,fit,positioning,shapes.geometric,shapes.misc}
+\pgfdeclarelayer{edge layer}
+\pgfdeclarelayer{background}
+\pgfsetlayers{background,edge layer,main}
+
+% ── Semantic palette ──────────────────────────────────────────────────────
+\definecolor{Paper}{HTML}{F7F4EE}
+\definecolor{Ink}{HTML}{17212B}
+\definecolor{Slate}{HTML}{5D6873}
+\definecolor{Fog}{HTML}{D9E1E3}
+\definecolor{DeepOcean}{HTML}{1B3A5B}
+\definecolor{Ocean}{HTML}{2A6F83}
+\definecolor{Teal}{HTML}{2A9D8F}
+\definecolor{Mint}{HTML}{DDF2EC}
+\definecolor{Coral}{HTML}{E76F51}
+\definecolor{Gold}{HTML}{E9C46A}
+\definecolor{Lavender}{HTML}{A78BFA}
+\definecolor{Sky}{HTML}{7BC4D9}
+\definecolor{Rose}{HTML}{F4A6A0}
+\definecolor{Sand}{HTML}{F0DFB4}
+
+% Scene family colors
+\definecolor{FamAgg}{HTML}{2A9D8F}     % 聚合族
+\definecolor{FamTemp}{HTML}{E76F51}    % 时序运动族
+\definecolor{FamNet}{HTML}{E9C46A}     % 网络流族
+\definecolor{FamField}{HTML}{7BC4D9}   % 连续场族
+\definecolor{FamPoly}{HTML}{A78BFA}    % 多边形族
+\definecolor{FamPoint}{HTML}{F4A6A0}   % 点云族
+\definecolor{FamPath}{HTML}{2A6F83}    % 路径拓扑族
+\definecolor{FamGlyph}{HTML}{F0DFB4}   % 多变量图元族
+\definecolor{FamText}{HTML}{5D6873}    % 标注族
+
+\lstdefinestyle{paper-code}{
+  basicstyle=\ttfamily\scriptsize\color{Ink},
+  keywordstyle=\bfseries\color{Ocean},
+  commentstyle=\itshape\color{Teal!75!black},
+  stringstyle=\color{Coral},
+  numberstyle=\scriptsize\color{Slate},
+  numbers=left,
+  numbersep=7pt,
+  frame=single,
+  rulecolor=\color{Fog},
+  backgroundcolor=\color{white},
+  breaklines=true,
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  tabsize=2,
+  xleftmargin=8pt,
+  framexleftmargin=6pt,
+  aboveskip=5pt,
+  belowskip=0pt
+}
+
+\tikzset{
+  every node/.style={font=\rmfamily, inner sep=0pt},
+  % Main vertical spine — the rendering data flow
+  spine/.style={draw=Fog, line width=5mm, line cap=butt, line join=round},
+  stage/.style={
+    circle, draw=DeepOcean, fill=DeepOcean, text=white, inner sep=0pt,
+    minimum size=7.5mm, font=\rmfamily\scriptsize\bfseries
+  },
+  stage label/.style={font=\rmfamily\footnotesize\bfseries, text=Ink},
+  stage sub/.style={font=\rmfamily\scriptsize, text=Slate},
+  % Family token — small color swatch + label
+  fam token/.style={
+    rounded corners=1.2mm, inner xsep=2mm, inner ysep=1mm,
+    font=\rmfamily\scriptsize\bfseries, text=white, align=center
+  },
+  % Scene card — represents one of the 12 scenes, grouped by family
+  scene card/.style={
+    draw=Slate!30, fill=white, rounded corners=1.4mm, line width=.5pt,
+    text width=25mm, minimum height=16mm,
+    font=\rmfamily\scriptsize, text=Ink, align=center,
+    inner xsep=2mm, inner ysep=4.5mm
+  },
+  % Section headings
+  section kicker/.style={font=\rmfamily\scriptsize\bfseries, text=Teal},
+  section title/.style={font=\rmfamily\large\bfseries, text=Ink},
+  section note/.style={font=\rmfamily\scriptsize, text=Slate},
+  % Stat tile
+  stat/.style={
+    rounded corners=2mm, fill=white, draw=Fog, line width=.6pt,
+    minimum width=22mm, minimum height=16mm,
+    align=center, inner sep=1mm
+  },
+  stat num/.style={font=\rmfamily\Large\bfseries, text=DeepOcean},
+  stat label/.style={font=\rmfamily\scriptsize, text=Slate},
+  % Pill/badge
+  pill/.style={
+    rounded corners=3mm, fill=Mint, text=Ocean,
+    inner xsep=2.5mm, inner ysep=1mm,
+    font=\rmfamily\scriptsize\bfseries
+  },
+  pill-warn/.style={
+    rounded corners=3mm, fill=Sand, text=Ink,
+    inner xsep=2.5mm, inner ysep=1mm,
+    font=\rmfamily\scriptsize\bfseries
+  },
+  pill-coral/.style={
+    rounded corners=3mm, fill=Rose!30, text=Coral,
+    inner xsep=2.5mm, inner ysep=1mm,
+    font=\rmfamily\scriptsize\bfseries
+  },
+  % Edge styles
+  call/.style={
+    -{Latex[length=2mm,width=1.4mm]}, draw=DeepOcean,
+    line width=.9pt, rounded corners=2mm
+  },
+  reply/.style={
+    -{Latex[length=2mm,width=1.4mm]}, draw=Teal,
+    densely dashed, line width=.8pt, rounded corners=2mm
+  },
+  dataflow/.style={
+    -{Stealth[length=1.8mm,width=1.4mm]}, draw=Ocean,
+    line width=1pt, rounded corners=1.5mm
+  },
+  boundary/.style={draw=Slate!40, dash pattern=on 2pt off 2.2pt, line width=.6pt},
+  note/.style={font=\rmfamily\scriptsize, text=Slate},
+  edge label/.style={font=\rmfamily\scriptsize, text=Slate},
+  code chip/.style={
+    font=\ttfamily\scriptsize, text=DeepOcean,
+    rounded corners=1mm, fill=Fog!40, inner xsep=2mm, inner ysep=1.2mm
+  },
+  % Package box for dependencies
+  pkg box/.style={
+    draw=Ocean!40, fill=white, rounded corners=1.8mm, line width=.6pt,
+    minimum width=36mm, minimum height=9mm,
+    font=\rmfamily\scriptsize\bfseries, text=DeepOcean, align=center
+  },
+  pkg sub/.style={font=\rmfamily\scriptsize, text=Slate}
+}
+
+\begin{document}
+\setlength{\parindent}{0pt}
+\begin{tikzpicture}[x=1cm,y=1cm]
+
+% ── Paper background ──────────────────────────────────────────────────────
+\begin{pgfonlayer}{background}
+  \fill[Paper,rounded corners=2.5mm] (-.5,-.5) rectangle (22.8,29.5);
+\end{pgfonlayer}
+
+% ══════════════════════════════════════════════════════════════════════════
+% SECTION 1 — 项目总览 (Hero)
+% ══════════════════════════════════════════════════════════════════════════
+\node[section kicker,anchor=west] at (0,28.9) {DECK.GL EXAMPLES · 架构信息图};
+\node[section title,anchor=west,font=\rmfamily\Large\bfseries] at (0,28.15)
+  {十二个纯本地 GPU 可视化参考场景};
+\node[section note,anchor=west,text width=12cm] at (0,27.5)
+  {无需底图、无运行时网络请求；确定性合成数据驱动；从类型检查到画布像素的自动化验证闭环。};
+
+% Stat tiles row
+\node[stat] (s12) at (14.2,27.9) {};
+\node[stat num] at (s12.center) {12};
+\node[stat label,anchor=north,yshift=-1.5mm] at (s12.south) {参考场景};
+
+\node[stat] (s4) at (17.0,27.9) {};
+\node[stat num] at (s4.center) {9};
+\node[stat label,anchor=north,yshift=-1.5mm] at (s4.south) {视觉家族};
+
+\node[stat] (s0) at (19.6,27.9) {};
+\node[stat num,text=Coral] at (s0.center) {0};
+\node[stat label,anchor=north,yshift=-1.5mm] at (s0.south) {外部请求};
+
+% Pill row
+\node[pill,anchor=west] at (0,26.8) {Vite + TypeScript};
+\node[pill,anchor=west] at (2.9,26.8) {deck.gl 9.3};
+\node[pill-warn,anchor=west] at (5.4,26.8) {纯合成数据};
+\node[pill-coral,anchor=west] at (8.3,26.8) {零底图依赖};
+\node[pill,anchor=west] at (10.9,26.8) {透明 PNG 导出};
+
+% Divider
+\draw[boundary] (0,26.2) -- (22.3,26.2);
+
+% ══════════════════════════════════════════════════════════════════════════
+% SECTION 2 — 技术栈与构建管线
+% ══════════════════════════════════════════════════════════════════════════
+\node[section kicker,anchor=west] at (0,25.6) {01 · 技术栈};
+\node[section title,anchor=west,font=\rmfamily\bfseries] at (0,24.95) {构建与依赖};
+\node[section note,anchor=west] at (0,24.4) {单仓库、单入口、四个 deck.gl 子包覆盖全部图层类型。};
+
+% Build pipeline horizontal flow — wider boxes, more vertical room
+\node[pkg box, minimum width=30mm] (vite) at (2.0,22.6) {Vite 8.2};
+\node[pkg sub,anchor=north,yshift=-1.5mm] at (vite.south) {开发 / 打包};
+
+\node[pkg box, minimum width=30mm] (tsc) at (5.6,22.6) {TypeScript 5.9};
+\node[pkg sub,anchor=north,yshift=-1.5mm] at (tsc.south) {类型检查};
+
+\node[pkg box, minimum width=34mm] (deck-core) at (10.0,23.9) {@deck.gl/core};
+\node[pkg sub,anchor=north,yshift=-1.5mm] at (deck-core.south) {Deck · 视图系统};
+
+\node[pkg box, minimum width=42mm] (deck-layers) at (14.6,24.8) {@deck.gl/layers};
+\node[pkg sub,anchor=north,text width=38mm,align=center,yshift=-1.5mm] at (deck-layers.south) {Arc / Path / Polygon\\Scatterplot / Text};
+
+\node[pkg box, minimum width=42mm] (deck-agg) at (14.6,23.1) {@deck.gl/aggregation-layers};
+\node[pkg sub,anchor=north,text width=38mm,align=center,yshift=-1.5mm] at (deck-agg.south) {Contour / Grid\\Heatmap / Hexagon};
+
+\node[pkg box, minimum width=42mm] (deck-geo) at (14.0,21.4) {@deck.gl/geo-layers};
+\node[pkg sub,anchor=west,xshift=2mm,yshift=-.7mm] at (deck-geo.east) {TripsLayer};
+
+\node[pkg box, minimum width=28mm] (playwright) at (18.9,23.1) {Playwright};
+\node[pkg sub,anchor=north,yshift=-1.5mm] at (playwright.south) {无头验证};
+
+% Build arrows (left side) — route around labels
+\begin{pgfonlayer}{edge layer}
+  \draw[dataflow] (vite.east) -- (tsc.west);
+  \draw[dataflow] (tsc.east) -- (deck-core.west);
+  \draw[dataflow] (deck-core.east) -- (12.2,23.9) |- (deck-layers.west);
+  \draw[dataflow] (deck-core.east) -- (12.2,23.1) -- (deck-agg.west);
+  \draw[dataflow] (deck-core.east) -- (11.8,22.2) -- (11.8,21.4) -- (deck-geo.west);
+  \draw[dataflow] (deck-agg.east) -- (playwright.west);
+\end{pgfonlayer}
+
+% Command chips sit to the left of build boxes
+\node[code chip,anchor=east] at (-0.2,23.4) {npm run build};
+\node[code chip,anchor=east] at (-0.2,22.0) {npm run validate};
+
+% Divider
+\draw[boundary] (0,20.6) -- (22.3,20.6);
+
+% ══════════════════════════════════════════════════════════════════════════
+% SECTION 3 — 场景家族矩阵 (core visual)
+% ══════════════════════════════════════════════════════════════════════════
+\node[section kicker,anchor=west] at (0,20.0) {02 · 场景家族};
+\node[section title,anchor=west,font=\rmfamily\bfseries] at (0,19.35) {十二个场景 · 九种视觉家族};
+\node[section note,anchor=west,text width=11cm] at (0,18.8)
+  {每个场景回答一个典型可视化问题。颜色编码家族身份，同色场景共享底层图层与数据模式。};
+
+% ── Row 1: 聚合族 (2 scenes) ──
+\node[fam token, fill=FamAgg, anchor=west] at (0,17.8) {聚合族};
+
+\node[scene card, anchor=west] (hex) at (2.0,17.8) {hexagons\\{\scriptsize\color{Slate}三维密度}};
+\node[scene card, anchor=west] (grid) at (5.1,17.8) {grid-cells\\{\scriptsize\color{Slate}规则网格}};
+
+\node[note,anchor=west] at (8.2,17.8) {GPU HexagonLayer / GridLayer};
+
+% ── Row 2: 时序运动族 (1) ──
+\node[fam token, fill=FamTemp, anchor=west] at (0,16.6) {时序运动};
+\node[scene card, anchor=west] (trips) at (2.0,16.6) {trips\\{\scriptsize\color{Slate}动态轨迹}};
+\node[note,anchor=west] at (8.2,16.6) {TripsLayer · 2400 条路径 · 动画帧循环};
+
+% ── Row 3: 网络流 / OD (2) ──
+\node[fam token, fill=FamNet, anchor=west] at (0,15.4) {网络流};
+\node[scene card, anchor=west] (flows) at (2.0,15.4) {flows\\{\scriptsize\color{Slate}分布式路径}};
+\node[scene card, anchor=west] (mig) at (5.1,15.4) {migration-arcs\\{\scriptsize\color{Slate}起止弧}};
+\node[note,anchor=west] at (8.2,15.4) {PathLayer + ArcLayer · 节点与流量编码};
+
+% ── Row 4: 连续场 / 标量场 (2) ──
+\node[fam token, fill=FamField, anchor=west] at (0,14.2) {连续场};
+\node[scene card, anchor=west] (heat) at (2.0,14.2) {heat-islands\\{\scriptsize\color{Slate}热岛叠加}};
+\node[scene card, anchor=west] (contour) at (5.1,14.2) {contour-pressure\\{\scriptsize\color{Slate}等值带}};
+\node[note,anchor=west] at (8.2,14.2) {HeatmapLayer · ContourLayer · 阈值分带};
+
+% ── Row 5: 多边形 (1) ──
+\node[fam token, fill=FamPoly, anchor=west] at (0,13.0) {多边形};
+\node[scene card, anchor=west] (parcel) at (2.0,13.0) {parcel-zoning\\{\scriptsize\color{Slate}土地利用}};
+\node[note,anchor=west] at (8.2,13.0) {PolygonLayer · 挤压 · 等距视角};
+
+% ── Row 6: 点云 (1) ──
+\node[fam token, fill=FamPoint, anchor=west] at (0,11.8) {点云};
+\node[scene card, anchor=west] (const) at (2.0,11.8) {constellation\\{\scriptsize\color{Slate}星座场}};
+\node[note,anchor=west] at (8.2,11.8) {ScatterplotLayer · 聚类与异常值};
+
+% ── Row 7: 路径拓扑 (1) ──
+\node[fam token, fill=FamPath, anchor=west] at (0,10.6) {路径拓扑};
+\node[scene card, anchor=west] (river) at (2.0,10.6) {river-network\\{\scriptsize\color{Slate}树状水系}};
+\node[note,anchor=west] at (8.2,10.6) {PathLayer · 河流等级驱动宽度};
+
+% ── Row 8: 多变量图元 (1) ──
+\node[fam token, fill=FamGlyph, anchor=west] at (0,9.4) {多变量图元};
+\node[scene card, anchor=west] (sensor) at (2.0,9.4) {sensor-field\\{\scriptsize\color{Slate}传感器场}};
+\node[note,anchor=west] at (8.2,9.4) {大小 + 颜色 + 描边 · 三维编码};
+
+% ── Row 9: 标注 (1) ──
+\node[fam token, fill=FamText, anchor=west] at (0,8.2) {标注};
+\node[scene card, anchor=west] (label) at (2.0,8.2) {label-atlas\\{\scriptsize\color{Slate}文字图集}};
+\node[note,anchor=west] at (8.2,8.2) {TextLayer + ScatterplotLayer};
+
+% Right side: family legend mini
+\begin{pgfonlayer}{background}
+  \draw[boundary] (12.8,8.0) rectangle (22.3,18.2);
+\end{pgfonlayer}
+\node[section kicker,anchor=west] at (13.1,17.6) {家族图例};
+\node[note,anchor=west,text width=6.5cm] at (13.1,17.0)
+  {九个家族对应九种常见的空间可视化问题。同一个家族内的场景共享数据结构、图层组合和交互模式。};
+
+\node[fam token, fill=FamAgg, minimum width=14mm, anchor=west] at (13.1,16.0) {聚合};
+\node[note,anchor=west,text width=5cm] at (14.9,16.0) {点数据 → GPU 分箱 → 高度/颜色};
+
+\node[fam token, fill=FamTemp, minimum width=14mm, anchor=west] at (13.1,15.0) {时序};
+\node[note,anchor=west,text width=5cm] at (14.9,15.0) {时间戳路径 → 尾迹动画};
+
+\node[fam token, fill=FamNet, minimum width=14mm, anchor=west] at (13.1,14.0) {网络};
+\node[note,anchor=west,text width=5cm] at (14.9,14.0) {节点 + 边/弧 → 流量对比};
+
+\node[fam token, fill=FamField, minimum width=14mm, anchor=west] at (13.1,13.0) {场};
+\node[note,anchor=west,text width=5cm] at (14.9,13.0) {连续密度 / 等值阈值分带};
+
+\node[fam token, fill=FamPoly, minimum width=14mm, anchor=west] at (13.1,12.0) {多边形};
+\node[note,anchor=west,text width=5cm] at (14.9,12.0) {面要素 → 类别 + 挤压};
+
+\node[fam token, fill=FamPoint, minimum width=14mm, anchor=west] at (13.1,11.0) {点云};
+\node[note,anchor=west,text width=5cm] at (14.9,11.0) {散点 → 聚类 + 异常};
+
+\node[fam token, fill=FamPath, minimum width=14mm, anchor=west] at (13.1,10.0) {路径};
+\node[note,anchor=west,text width=5cm] at (14.9,10.0) {树状拓扑 → 等级宽度};
+
+\node[fam token, fill=FamGlyph, minimum width=14mm, anchor=west] at (13.1,9.0) {图元};
+\node[note,anchor=west,text width=5cm] at (14.9,9.0) {多通道视觉编码};
+
+\node[fam token, fill=FamText, minimum width=14mm, anchor=west] at (13.1,8.5) {标注};
+\node[note,anchor=west,text width=5cm] at (14.9,8.5) {文本 + 锚点联动};
+
+% Divider
+\draw[boundary] (0,7.4) -- (22.3,7.4);
+
+% ══════════════════════════════════════════════════════════════════════════
+% SECTION 4 — 数据→渲染 主路径 (left column)  +  验证闭环 (right column)
+% ══════════════════════════════════════════════════════════════════════════
+
+% LEFT: data → render flow
+\node[section kicker,anchor=west] at (0,6.8) {03 · 渲染管线};
+\node[section title,anchor=west,font=\rmfamily\bfseries] at (0,6.15) {数据 → GPU → 画布};
+\node[section note,anchor=west,text width=7.5cm] at (0,5.6)
+  {确定性伪随机生成器产生可复现数据；deck.gl 在 WebGL 中完成聚合、着色与合成，输出支持透明背景。};
+
+% Vertical spine of 4 stages — centered column
+\node[stage] (st1) at (2.0,3.8) {01};
+\node[stage label,anchor=west] at (2.9,4.1) {合成数据生成};
+\node[stage sub,anchor=west] at (2.9,3.5) {pseudo() · sin 哈希 · 确定性};
+
+\node[stage] (st2) at (2.0,1.8) {02};
+\node[stage label,anchor=west] at (2.9,2.1) {图层装配};
+\node[stage sub,anchor=west] at (2.9,1.5) {Hexagon / Heatmap / Trips …};
+
+\node[stage] (st3) at (2.0,-0.2) {03};
+\node[stage label,anchor=west] at (2.9,0.1) {WebGL 渲染};
+\node[stage sub,anchor=west] at (2.9,-0.5) {OrbitView / OrthographicView};
+
+\node[stage] (st4) at (2.0,-2.2) {04};
+\node[stage label,anchor=west] at (2.9,-1.9) {透明 PNG 导出};
+\node[stage sub,anchor=west] at (2.9,-2.5) {preserveDrawingBuffer · alpha};
+
+\begin{pgfonlayer}{edge layer}
+  \draw[spine] (st1.south) -- (st2.north);
+  \draw[spine] (st2.south) -- (st3.north);
+  \draw[spine] (st3.south) -- (st4.north);
+\end{pgfonlayer}
+
+% Data generator code chips — to the RIGHT of stage labels, clear of arrows
+\node[code chip,anchor=west] at (7.5,4.3) {makePoints(120k)};
+\node[code chip,anchor=west] at (7.5,3.55) {makeTrips(900)};
+\node[code chip,anchor=west] at (7.5,2.8) {networkNodes · flows};
+\node[code chip,anchor=west] at (7.5,2.05) {branches · parcels · hubs};
+
+% Arrow from chip column into stage 1 — enters from above, label sits above line
+\begin{pgfonlayer}{edge layer}
+  \draw[call] (7.5,4.5) -- (st1.north|-0,4.5) -- (st1.north);
+\end{pgfonlayer}
+\node[edge label,anchor=south,yshift=1mm] at (5.5,4.5) {输入数据};
+
+% RIGHT: validation pipeline
+\node[section kicker,anchor=west] at (12.8,6.8) {04 · 验证闭环};
+\node[section title,anchor=west,font=\rmfamily\bfseries] at (12.8,6.15) {全自动化像素级验证};
+\node[section note,anchor=west,text width=7.2cm] at (12.8,5.55)
+  {Playwright 启动系统 Chrome，逐场景断言画布内容、控制台零错误、零外网请求。};
+
+% validate.mjs pill — sits below note, above cards
+\node[pill-coral,anchor=west] at (12.8,4.9) {scripts/validate.mjs};
+
+% Validation stages — cards with generous padding
+\node[scene card, fill=white, text width=65mm, minimum height=14mm, align=left, inner xsep=3mm, inner ysep=3.5mm, anchor=west] (v1) at (12.8,4.1)
+  {{\bfseries 阻断外网请求}\\{\scriptsize\color{Slate}page.route → 非 127.0.0.1 一律 abort}};
+
+\node[scene card, fill=white, text width=65mm, minimum height=14mm, align=left, inner xsep=3mm, inner ysep=3.5mm, anchor=west] (v2) at (12.8,2.4)
+  {{\bfseries 等待场景就绪}\\{\scriptsize\color{Slate}window.\_\_plotDemo.ready === true}};
+
+\node[scene card, fill=white, text width=65mm, minimum height=14mm, align=left, inner xsep=3mm, inner ysep=3.5mm, anchor=west] (v3) at (12.8,0.7)
+  {{\bfseries 断言动画帧推进}\\{\scriptsize\color{Slate}trips 场景 frame 必须递增}};
+
+\node[scene card, fill=white, text width=65mm, minimum height=14mm, align=left, inner xsep=3mm, inner ysep=3.5mm, anchor=west] (v4) at (12.8,-1.0)
+  {{\bfseries 带样式预览截图}\\{\scriptsize\color{Slate}opaque > 95\% · 彩色像素 > 3500}};
+
+\node[scene card, fill=white, text width=65mm, minimum height=14mm, align=left, inner xsep=3mm, inner ysep=3.5mm, anchor=west] (v5) at (12.8,-2.7)
+  {{\bfseries 透明 PNG 导出校验}\\{\scriptsize\color{Slate}alpha 透明 > 10\% · 内容像素 > 2500}};
+
+% Validation flow arrows
+\begin{pgfonlayer}{edge layer}
+  \draw[dataflow] (v1.south) -- (v2.north);
+  \draw[dataflow] (v2.south) -- (v3.north);
+  \draw[dataflow] (v3.south) -- (v4.north);
+  \draw[dataflow] (v4.south) -- (v5.north);
+\end{pgfonlayer}
+
+% Bottom: outputs
+\draw[boundary] (0,-4.0) -- (22.3,-4.0);
+
+\node[section kicker,anchor=west] at (0,-4.6) {产物};
+\node[code chip,anchor=west] at (0,-5.25) {out/*-transparent.png};
+\node[code chip,anchor=west] at (4.4,-5.25) {out/*-preview.png};
+\node[code chip,anchor=west] at (8.2,-5.25) {catalog.json};
+\node[code chip,anchor=west] at (10.7,-5.25) {dist/};
+
+\node[note,anchor=east] at (22.3,-5.25) {deckgl-examples · v0.1.0};
+
+\end{tikzpicture}
+\end{document}

@@ -1,0 +1,139 @@
+{
+  "schema_version": 1,
+  "project": "deckgl-examples",
+  "figure": "architecture-infographic",
+  "language": "zh-CN",
+  "thesis": "十二个纯本地 deck.gl GPU 可视化参考场景，零外部依赖，确定性合成数据驱动，从类型检查到画布像素的自动化验证闭环。",
+  "audience": "前端可视化工程师、deck.gl 学习者",
+  "reader_question": "deckgl-examples 项目包含什么、如何构建、如何验证？",
+  "source": {
+    "path": "docs/architecture-infographic.tex",
+    "engine": "xelatex",
+    "packages": [
+      "ctex",
+      "tikz",
+      "listings"
+    ],
+    "tikz_libraries": [
+      "arrows.meta",
+      "backgrounds",
+      "calc",
+      "fit",
+      "positioning",
+      "shapes.geometric",
+      "shapes.misc"
+    ]
+  },
+  "build_command": "python3 /Users/junix/.claude/skills/create-infographic/scripts/render_tikz.py docs/architecture-infographic.tex --out-dir /tmp/out --engine xelatex --dpi 220 --svg --expect-text deckgl",
+  "rendered": {
+    "pdf": {
+      "path": "docs/architecture-infographic.pdf",
+      "bytes": 120187
+    },
+    "png": {
+      "path": "docs/architecture-infographic.png",
+      "bytes": 714946,
+      "width_px": 2053,
+      "height_px": 3093,
+      "dpi": 220,
+      "background": "opaque (Paper #F7F4EE)"
+    },
+    "svg": {
+      "path": "docs/architecture-infographic.svg",
+      "bytes": 989897
+    }
+  },
+  "sections": [
+    {
+      "id": "hero",
+      "title": "项目总览",
+      "claim": "12 个场景 · 9 大家族 · 0 外部请求"
+    },
+    {
+      "id": "tech-stack",
+      "title": "技术栈与构建",
+      "claim": "Vite + TypeScript + 四个 deck.gl 子包 + Playwright 验证"
+    },
+    {
+      "id": "scene-families",
+      "title": "场景家族矩阵",
+      "claim": "九种视觉家族覆盖聚合、时序、网络、场、多边形、点云、路径、图元、标注"
+    },
+    {
+      "id": "render-pipeline",
+      "title": "渲染管线",
+      "claim": "合成数据 → GPU 图层装配 → WebGL 渲染 → 透明 PNG 导出"
+    },
+    {
+      "id": "validation",
+      "title": "验证闭环",
+      "claim": "外网阻断 + 就绪等待 + 动画断言 + 像素级透明/彩色校验"
+    }
+  ],
+  "evidence_sources": [
+    {
+      "id": "readme",
+      "file": "README.md",
+      "fact": "12 个自包含场景，无底图无运行时网络依赖"
+    },
+    {
+      "id": "catalog",
+      "file": "catalog.json",
+      "fact": "12 个场景 id / use / family / question / tags"
+    },
+    {
+      "id": "package",
+      "file": "package.json",
+      "fact": "依赖 deck.gl 9.3.10 四个子包，Vite 8 / TS 5.9 / Playwright 1.62"
+    },
+    {
+      "id": "main",
+      "file": "src/main.ts",
+      "fact": "pseudo() 确定性伪随机数据生成，120k 点 / 900 条行程等"
+    },
+    {
+      "id": "validate",
+      "file": "scripts/validate.mjs",
+      "fact": "Playwright 无头验证：外网阻断、ready 等待、动画断言、像素阈值"
+    }
+  ],
+  "palette": {
+    "paper": "#F7F4EE",
+    "ink": "#17212B",
+    "accent": "#2A9D8F (Teal)",
+    "primary": "#1B3A5B (DeepOcean)",
+    "families": [
+      "#2A9D8F",
+      "#E76F51",
+      "#E9C46A",
+      "#7BC4D9",
+      "#A78BFA",
+      "#F4A6A0",
+      "#2A6F83",
+      "#F0DFB4",
+      "#5D6873"
+    ]
+  },
+  "fonts": {
+    "serif_cjk": "Source Han Serif SC",
+    "mono": "Sarasa Mono SC",
+    "fallback": "Fandol / Latin Modern"
+  },
+  "composition_gate": {
+    "strict": false,
+    "violations_remaining": 1,
+    "warnings": [
+      "connector_crowds_block: -0.3pt 轻微重叠（视觉不可察）"
+    ],
+    "labelled_connector_ratio": 0.143,
+    "ink_density": 0.073,
+    "quiet_cell_fraction": 0.25
+  },
+  "verification": {
+    "identity_text_present": true,
+    "cjk_glyphs": "Source Han Serif SC 已验证",
+    "no_missing_glyph_warnings": true,
+    "no_clip_right_edge": true,
+    "no_clip_bottom": true
+  }
+}
