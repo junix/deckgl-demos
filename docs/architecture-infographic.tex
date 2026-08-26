@@ -1,8 +1,13 @@
-\documentclass[border=10pt,varwidth=23cm]{standalone}
+\documentclass[border=10pt,varwidth=24cm]{standalone}
 % deckgl-examples 架构信息图
 % 主题：12 个纯本地 deck.gl 参考场景 · 零外部依赖 · 自动化视觉验证
 % 读法：从上到下，先看场景家族矩阵，再沿左侧主路径读「数据→渲染→验证」闭环。
+% Render: python3 ~/.agents/skills/create-infographic/scripts/render_tikz.py docs/architecture-infographic.tex --workdir . --out-dir docs --engine xelatex --dpi 300 --svg --strict-warnings --strict-geometry --strict-composition --strict-svg --min-labelled-connectors 0.6 --expect-text "deckgl-examples"
 \usepackage[UTF8,fontset=none]{ctex}
+% 全局轻微字距：消除 dvisvgm 字形墨盒在负 kern 字对上的亚像素重叠（非布局问题）
+\defaultfontfeatures{LetterSpace=5}
+% CJK 字符间加发丝级 glue：消除跨 text run 的 CJK 字形墨盒亚像素重叠
+\xeCJKsetup{CJKglue={\hskip 0.05em plus 0.08em}}
 \IfFontExistsTF{Source Han Serif SC}{
   \setmainfont[BoldFont={Source Han Serif SC Bold}]{Source Han Serif SC}
   \setsansfont[BoldFont={Source Han Serif SC Bold}]{Source Han Serif SC}
@@ -146,7 +151,7 @@
   edge label/.style={font=\rmfamily\scriptsize, text=Slate},
   code chip/.style={
     font=\ttfamily\scriptsize, text=DeepOcean,
-    rounded corners=1mm, fill=Fog!40, inner xsep=2mm, inner ysep=1.2mm
+    rounded corners=1mm, fill=Fog!40, inner xsep=2mm, inner ysep=1.8mm
   },
   % Package box for dependencies
   pkg box/.style={
@@ -163,7 +168,7 @@
 
 % ── Paper background ──────────────────────────────────────────────────────
 \begin{pgfonlayer}{background}
-  \fill[Paper,rounded corners=2.5mm] (-.5,-.5) rectangle (22.8,29.5);
+  \fill[Paper,rounded corners=2.5mm] (-.5,-6.0) rectangle (22.8,29.5);
 \end{pgfonlayer}
 
 % ══════════════════════════════════════════════════════════════════════════
@@ -201,7 +206,7 @@
 % ══════════════════════════════════════════════════════════════════════════
 % SECTION 2 — 技术栈与构建管线
 % ══════════════════════════════════════════════════════════════════════════
-\node[section kicker,anchor=west] at (0,25.6) {01 · 技术栈};
+\node[section kicker,anchor=west] at (0,25.82) {01 · 技术栈};
 \node[section title,anchor=west,font=\rmfamily\bfseries] at (0,24.95) {构建与依赖};
 \node[section note,anchor=west] at (0,24.4) {单仓库、单入口、四个 deck.gl 子包覆盖全部图层类型。};
 
@@ -224,7 +229,7 @@
 \node[pkg box, minimum width=42mm] (deck-geo) at (14.0,21.4) {@deck.gl/geo-layers};
 \node[pkg sub,anchor=west,xshift=2mm,yshift=-.7mm] at (deck-geo.east) {TripsLayer};
 
-\node[pkg box, minimum width=28mm] (playwright) at (18.9,23.1) {Playwright};
+\node[pkg box, minimum width=28mm] (playwright) at (19.5,23.1) {Playwright};
 \node[pkg sub,anchor=north,yshift=-1.5mm] at (playwright.south) {无头验证};
 
 % Build arrows (left side) — route around labels
@@ -236,10 +241,12 @@
   \draw[dataflow] (deck-core.east) -- (11.8,22.2) -- (11.8,21.4) -- (deck-geo.west);
   \draw[dataflow] (deck-agg.east) -- (playwright.west);
 \end{pgfonlayer}
+\node[edge label] at (7.55,23.55) {依赖};
+\node[edge label] at (17.4,23.4) {渲染输出};
 
-% Command chips sit to the left of build boxes
-\node[code chip,anchor=east] at (-0.2,23.4) {npm run build};
-\node[code chip,anchor=east] at (-0.2,22.0) {npm run validate};
+% Command chips sit below the build boxes, inside the paper
+\node[code chip] at (2.0,21.3) {npm run build};
+\node[code chip] at (5.6,21.3) {npm run validate};
 
 % Divider
 \draw[boundary] (0,20.6) -- (22.3,20.6);
@@ -247,7 +254,7 @@
 % ══════════════════════════════════════════════════════════════════════════
 % SECTION 3 — 场景家族矩阵 (core visual)
 % ══════════════════════════════════════════════════════════════════════════
-\node[section kicker,anchor=west] at (0,20.0) {02 · 场景家族};
+\node[section kicker,anchor=west] at (0,20.22) {02 · 场景家族};
 \node[section title,anchor=west,font=\rmfamily\bfseries] at (0,19.35) {十二个场景 · 九种视觉家族};
 \node[section note,anchor=west,text width=11cm] at (0,18.8)
   {每个场景回答一个典型可视化问题。颜色编码家族身份，同色场景共享底层图层与数据模式。};
@@ -323,7 +330,7 @@
 \node[note,anchor=west,text width=5cm] at (14.9,13.0) {连续密度 / 等值阈值分带};
 
 \node[fam token, fill=FamPoly, minimum width=14mm, anchor=west] at (13.1,12.0) {多边形};
-\node[note,anchor=west,text width=5cm] at (14.9,12.0) {面要素 → 类别 + 挤压};
+\node[note,anchor=west,text width=5cm] at (14.9,12.0) {面要素 \kern0.5pt→ 类别 + 挤压};
 
 \node[fam token, fill=FamPoint, minimum width=14mm, anchor=west] at (13.1,11.0) {点云};
 \node[note,anchor=west,text width=5cm] at (14.9,11.0) {散点 → 聚类 + 异常};
@@ -338,7 +345,7 @@
 \node[note,anchor=west,text width=5cm] at (14.9,8.5) {文本 + 锚点联动};
 
 % Divider
-\draw[boundary] (0,7.4) -- (22.3,7.4);
+\draw[boundary] (0,7.1) -- (22.3,7.1);
 
 % ══════════════════════════════════════════════════════════════════════════
 % SECTION 4 — 数据→渲染 主路径 (left column)  +  验证闭环 (right column)
@@ -372,6 +379,10 @@
   \draw[spine] (st2.south) -- (st3.north);
   \draw[spine] (st3.south) -- (st4.north);
 \end{pgfonlayer}
+% Spine segment labels — what flows between stages, offset left of the stroke
+\node[edge label,anchor=east] at (1.6,2.8) {数据集};
+\node[edge label,anchor=east] at (1.6,0.8) {图层栈};
+\node[edge label,anchor=east] at (1.6,-1.2) {帧缓冲};
 
 % Data generator code chips — to the RIGHT of stage labels, clear of arrows
 \node[code chip,anchor=west] at (7.5,4.3) {makePoints(120k)};
@@ -392,22 +403,23 @@
   {Playwright 启动系统 Chrome，逐场景断言画布内容、控制台零错误、零外网请求。};
 
 % validate.mjs pill — sits below note, above cards
-\node[pill-coral,anchor=west] at (12.8,4.9) {scripts/validate.mjs};
+% 局部加字距：消除 'validate' 加粗拉丁字形墨盒的亚像素重叠（非布局问题）
+\node[pill-coral,anchor=west] at (12.8,4.9) {\addfontfeature{LetterSpace=12}scripts/validate.mjs};
 
 % Validation stages — cards with generous padding
-\node[scene card, fill=white, text width=65mm, minimum height=14mm, align=left, inner xsep=3mm, inner ysep=3.5mm, anchor=west] (v1) at (12.8,4.1)
+\node[scene card, fill=white, text width=65mm, minimum height=12mm, align=left, inner xsep=3mm, inner ysep=3.5mm, anchor=west] (v1) at (12.8,4.1)
   {{\bfseries 阻断外网请求}\\{\scriptsize\color{Slate}page.route → 非 127.0.0.1 一律 abort}};
 
-\node[scene card, fill=white, text width=65mm, minimum height=14mm, align=left, inner xsep=3mm, inner ysep=3.5mm, anchor=west] (v2) at (12.8,2.4)
+\node[scene card, fill=white, text width=65mm, minimum height=12mm, align=left, inner xsep=3mm, inner ysep=3.5mm, anchor=west] (v2) at (12.8,2.4)
   {{\bfseries 等待场景就绪}\\{\scriptsize\color{Slate}window.\_\_plotDemo.ready === true}};
 
-\node[scene card, fill=white, text width=65mm, minimum height=14mm, align=left, inner xsep=3mm, inner ysep=3.5mm, anchor=west] (v3) at (12.8,0.7)
+\node[scene card, fill=white, text width=65mm, minimum height=12mm, align=left, inner xsep=3mm, inner ysep=3.5mm, anchor=west] (v3) at (12.8,0.7)
   {{\bfseries 断言动画帧推进}\\{\scriptsize\color{Slate}trips 场景 frame 必须递增}};
 
-\node[scene card, fill=white, text width=65mm, minimum height=14mm, align=left, inner xsep=3mm, inner ysep=3.5mm, anchor=west] (v4) at (12.8,-1.0)
+\node[scene card, fill=white, text width=65mm, minimum height=12mm, align=left, inner xsep=3mm, inner ysep=3.5mm, anchor=west] (v4) at (12.8,-1.0)
   {{\bfseries 带样式预览截图}\\{\scriptsize\color{Slate}opaque > 95\% · 彩色像素 > 3500}};
 
-\node[scene card, fill=white, text width=65mm, minimum height=14mm, align=left, inner xsep=3mm, inner ysep=3.5mm, anchor=west] (v5) at (12.8,-2.7)
+\node[scene card, fill=white, text width=65mm, minimum height=12mm, align=left, inner xsep=3mm, inner ysep=3.5mm, anchor=west] (v5) at (12.8,-2.7)
   {{\bfseries 透明 PNG 导出校验}\\{\scriptsize\color{Slate}alpha 透明 > 10\% · 内容像素 > 2500}};
 
 % Validation flow arrows
@@ -417,11 +429,16 @@
   \draw[dataflow] (v3.south) -- (v4.north);
   \draw[dataflow] (v4.south) -- (v5.north);
 \end{pgfonlayer}
+% Edge labels in the gaps, beside the stroke
+\node[edge label,anchor=west] at (16.75,3.25) {请求白名单};
+\node[edge label,anchor=west] at (16.75,1.55) {ready 信号};
+\node[edge label,anchor=west] at (16.75,-0.15) {递增帧};
+\node[edge label,anchor=west] at (16.75,-1.85) {预览 PNG};
 
 % Bottom: outputs
 \draw[boundary] (0,-4.0) -- (22.3,-4.0);
 
-\node[section kicker,anchor=west] at (0,-4.6) {产物};
+\node[section kicker,anchor=west] at (0,-4.4) {产物};
 \node[code chip,anchor=west] at (0,-5.25) {out/*-transparent.png};
 \node[code chip,anchor=west] at (4.4,-5.25) {out/*-preview.png};
 \node[code chip,anchor=west] at (8.2,-5.25) {catalog.json};

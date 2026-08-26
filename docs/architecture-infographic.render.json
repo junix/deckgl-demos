@@ -1,139 +1,235 @@
 {
-  "schema_version": 1,
-  "project": "deckgl-examples",
-  "figure": "architecture-infographic",
-  "language": "zh-CN",
-  "thesis": "十二个纯本地 deck.gl GPU 可视化参考场景，零外部依赖，确定性合成数据驱动，从类型检查到画布像素的自动化验证闭环。",
-  "audience": "前端可视化工程师、deck.gl 学习者",
-  "reader_question": "deckgl-examples 项目包含什么、如何构建、如何验证？",
-  "source": {
-    "path": "docs/architecture-infographic.tex",
-    "engine": "xelatex",
-    "packages": [
-      "ctex",
-      "tikz",
-      "listings"
+  "source": "/Users/junix/projects/plot/deckgl-examples/docs/architecture-infographic.tex",
+  "workdir": "/Users/junix/projects/plot/deckgl-examples",
+  "source_sha256": "b913906132496bc99690b602f32651026c759d5bb0e7094cbf529c819e478b69",
+  "engine": "xelatex",
+  "engine_version": "XeTeX 3.141592653-2.6-0.999995 (TeX Live 2023)",
+  "dpi": 300,
+  "passes": 2,
+  "transparent_png": false,
+  "shell_escape": false,
+  "warnings": [],
+  "geometry": {
+    "pdf": "/var/folders/6q/xkny9rm10gqbzhz7qd0mjp5r0000gn/T/tikz-render-3215tnrd/architecture-infographic.pdf",
+    "page_count": 1,
+    "expected_text": "deckgl-examples",
+    "identity_match": true,
+    "thresholds": {
+      "min_text_pt": 6.5,
+      "min_width_occupancy": 0.45,
+      "min_height_occupancy": 0.3
+    },
+    "pages": [
+      {
+        "page": 1,
+        "width_pt": 680.4,
+        "height_pt": 1026.22,
+        "line_count": 152,
+        "text_extent": {
+          "left": 24.335,
+          "top": 23.726,
+          "right": 656.0695,
+          "bottom": 999.14
+        },
+        "width_occupancy": 0.9285,
+        "height_occupancy": 0.9505,
+        "overlap_count": 0,
+        "overlap_examples": [],
+        "tiny_text_count": 0,
+        "tiny_text_examples": []
+      }
     ],
-    "tikz_libraries": [
-      "arrows.meta",
-      "backgrounds",
-      "calc",
-      "fit",
-      "positioning",
-      "shapes.geometric",
-      "shapes.misc"
-    ]
+    "issues": [],
+    "pass": true
   },
-  "build_command": "python3 /Users/junix/.claude/skills/create-infographic/scripts/render_tikz.py docs/architecture-infographic.tex --out-dir /tmp/out --engine xelatex --dpi 220 --svg --expect-text deckgl",
-  "rendered": {
+  "composition": {
+    "pdf": "/var/folders/6q/xkny9rm10gqbzhz7qd0mjp5r0000gn/T/tikz-render-3215tnrd/architecture-infographic.pdf",
+    "page": {
+      "width_pt": 680.4,
+      "height_pt": 1026.22
+    },
+    "counts": {
+      "blocks": 66,
+      "containers": 1,
+      "leaf_blocks": 65,
+      "connectors": 14,
+      "marks": 11,
+      "text_lines": 152,
+      "masked_labels": 0,
+      "ignored_text_regions": 0,
+      "ignored_text_blocks": 0,
+      "ignored_text_connectors": 0,
+      "ignored_presentation_fields": 0,
+      "ignored_label_backdrops": 0
+    },
+    "metrics": {
+      "connectors_per_leaf_block": 0.215,
+      "labelled_connector_ratio": 0.714,
+      "leaf_area_cv": 0.979,
+      "lattice_ratio": 0.308,
+      "container_depth": 2,
+      "min_clearance_pt": null
+    },
+    "raster": {
+      "available": true,
+      "png": "/var/folders/6q/xkny9rm10gqbzhz7qd0mjp5r0000gn/T/tikz-render-3215tnrd/architecture-infographic.png",
+      "background_rgb": [
+        248,
+        248,
+        248
+      ],
+      "ink_density": 0.0564,
+      "cell_density_cv": 0.7794,
+      "quiet_cell_fraction": 0.25,
+      "cells": 36
+    },
+    "thresholds": {
+      "clearance_pt": 2.0,
+      "label_radius_pt": 12.0,
+      "text_padding_pt": 1.5,
+      "min_block_area_pt2": 120.0,
+      "max_block_area_ratio": 0.55,
+      "min_connector_length_pt": 8.0,
+      "min_labeled_connector_ratio": 0.6,
+      "grid_min_blocks": 6,
+      "grid_area_cv": 0.12,
+      "grid_lattice_ratio": 0.75,
+      "max_container_depth": 2,
+      "max_ink_density": 0.38,
+      "min_quiet_cell_fraction": 0.08,
+      "min_cell_density_cv": 0.35
+    },
+    "violations": [],
+    "issues": [],
+    "notes": [],
+    "pass": true
+  },
+  "svg_lint": {
+    "tool": "svg-linter 0.1.0",
+    "input_sha256": "d70c310a0aa5ea9433854af2956b1ea1d9593fa60103dedc6ef4eb2a0e723797",
+    "catalog": {
+      "schema_version": "svg-linter.catalog/v1",
+      "catalog_version": "3",
+      "catalog_hash": "sha256:9079749fd5985a8f505c2a96c7d7dd90a990fb73f9f295c12620f63c338ac333"
+    },
+    "passes": {
+      "error_gate": {
+        "select": [
+          "svg/duplicate-id",
+          "svg/dangling-reference"
+        ],
+        "coverage": {
+          "evaluated": [
+            "svg/dangling-reference",
+            "svg/duplicate-id"
+          ],
+          "not_evaluated": {}
+        },
+        "counts": {},
+        "errors": 0,
+        "total": 0,
+        "viz": null
+      },
+      "hygiene_review": {
+        "select": [
+          "svg/excessive-path-complexity",
+          "svg/unused-definition",
+          "svg/external-resource",
+          "svg/raster-upscale",
+          "svg/open-filled-path"
+        ],
+        "coverage": {
+          "evaluated": [
+            "svg/excessive-path-complexity",
+            "svg/external-resource",
+            "svg/open-filled-path",
+            "svg/raster-upscale",
+            "svg/unused-definition"
+          ],
+          "not_evaluated": {}
+        },
+        "counts": {},
+        "errors": 0,
+        "total": 0,
+        "viz": null
+      },
+      "collision_review": {
+        "select": [
+          "svg/line-overlap",
+          "svg/line-crossing",
+          "svg/line-text-overlap",
+          "svg/text-text-overlap",
+          "svg/canvas-edge-clearance",
+          "svg/ambiguous-junction",
+          "svg/connector-through-shape",
+          "svg/edge-congestion",
+          "svg/filter-clipping-risk",
+          "svg/low-contrast-text"
+        ],
+        "coverage": {
+          "evaluated": [
+            "svg/ambiguous-junction",
+            "svg/canvas-edge-clearance",
+            "svg/connector-through-shape",
+            "svg/edge-congestion",
+            "svg/filter-clipping-risk",
+            "svg/line-crossing",
+            "svg/line-overlap",
+            "svg/line-text-overlap",
+            "svg/low-contrast-text",
+            "svg/text-text-overlap"
+          ],
+          "not_evaluated": {}
+        },
+        "counts": {},
+        "errors": 0,
+        "total": 0,
+        "viz": "/Users/junix/projects/plot/deckgl-examples/docs/architecture-infographic.collision-review.png"
+      }
+    },
+    "path_font_quarantine": [
+      "svg/out-of-bounds",
+      "svg/path-self-crossing",
+      "svg/exact-duplicate-geometry",
+      "svg/outlined-text",
+      "svg/dangling-connector",
+      "svg/marker-overlap",
+      "svg/text-container-overflow",
+      "svg/text-edge-clearance",
+      "svg/shape-shape-overlap",
+      "svg/text-shape-overlap",
+      "svg/tiny-dogleg",
+      "svg/acute-connector-bend",
+      "svg/excessive-bends",
+      "svg/alignment-outlier",
+      "svg/spacing-outlier",
+      "svg/size-outlier",
+      "svg/container-padding-outlier",
+      "svg/font-style-outlier"
+    ],
+    "error_gate_clean": true,
+    "collision_findings": 0
+  },
+  "published_despite_strict_failure": false,
+  "artifacts": {
     "pdf": {
-      "path": "docs/architecture-infographic.pdf",
-      "bytes": 120187
+      "path": "/Users/junix/projects/plot/deckgl-examples/docs/architecture-infographic.pdf",
+      "bytes": 124283
     },
     "png": {
-      "path": "docs/architecture-infographic.png",
-      "bytes": 714946,
-      "width_px": 2053,
-      "height_px": 3093,
-      "dpi": 220,
-      "background": "opaque (Paper #F7F4EE)"
+      "path": "/Users/junix/projects/plot/deckgl-examples/docs/architecture-infographic.png",
+      "bytes": 1072871,
+      "width_px": 2835,
+      "height_px": 4276,
+      "width_to_height": 0.663
     },
     "svg": {
-      "path": "docs/architecture-infographic.svg",
-      "bytes": 989897
+      "path": "/Users/junix/projects/plot/deckgl-examples/docs/architecture-infographic.svg",
+      "bytes": 1056478
+    },
+    "svg_lint_viz": {
+      "path": "/Users/junix/projects/plot/deckgl-examples/docs/architecture-infographic.collision-review.png",
+      "bytes": 182458
     }
-  },
-  "sections": [
-    {
-      "id": "hero",
-      "title": "项目总览",
-      "claim": "12 个场景 · 9 大家族 · 0 外部请求"
-    },
-    {
-      "id": "tech-stack",
-      "title": "技术栈与构建",
-      "claim": "Vite + TypeScript + 四个 deck.gl 子包 + Playwright 验证"
-    },
-    {
-      "id": "scene-families",
-      "title": "场景家族矩阵",
-      "claim": "九种视觉家族覆盖聚合、时序、网络、场、多边形、点云、路径、图元、标注"
-    },
-    {
-      "id": "render-pipeline",
-      "title": "渲染管线",
-      "claim": "合成数据 → GPU 图层装配 → WebGL 渲染 → 透明 PNG 导出"
-    },
-    {
-      "id": "validation",
-      "title": "验证闭环",
-      "claim": "外网阻断 + 就绪等待 + 动画断言 + 像素级透明/彩色校验"
-    }
-  ],
-  "evidence_sources": [
-    {
-      "id": "readme",
-      "file": "README.md",
-      "fact": "12 个自包含场景，无底图无运行时网络依赖"
-    },
-    {
-      "id": "catalog",
-      "file": "catalog.json",
-      "fact": "12 个场景 id / use / family / question / tags"
-    },
-    {
-      "id": "package",
-      "file": "package.json",
-      "fact": "依赖 deck.gl 9.3.10 四个子包，Vite 8 / TS 5.9 / Playwright 1.62"
-    },
-    {
-      "id": "main",
-      "file": "src/main.ts",
-      "fact": "pseudo() 确定性伪随机数据生成，120k 点 / 900 条行程等"
-    },
-    {
-      "id": "validate",
-      "file": "scripts/validate.mjs",
-      "fact": "Playwright 无头验证：外网阻断、ready 等待、动画断言、像素阈值"
-    }
-  ],
-  "palette": {
-    "paper": "#F7F4EE",
-    "ink": "#17212B",
-    "accent": "#2A9D8F (Teal)",
-    "primary": "#1B3A5B (DeepOcean)",
-    "families": [
-      "#2A9D8F",
-      "#E76F51",
-      "#E9C46A",
-      "#7BC4D9",
-      "#A78BFA",
-      "#F4A6A0",
-      "#2A6F83",
-      "#F0DFB4",
-      "#5D6873"
-    ]
-  },
-  "fonts": {
-    "serif_cjk": "Source Han Serif SC",
-    "mono": "Sarasa Mono SC",
-    "fallback": "Fandol / Latin Modern"
-  },
-  "composition_gate": {
-    "strict": false,
-    "violations_remaining": 1,
-    "warnings": [
-      "connector_crowds_block: -0.3pt 轻微重叠（视觉不可察）"
-    ],
-    "labelled_connector_ratio": 0.143,
-    "ink_density": 0.073,
-    "quiet_cell_fraction": 0.25
-  },
-  "verification": {
-    "identity_text_present": true,
-    "cjk_glyphs": "Source Han Serif SC 已验证",
-    "no_missing_glyph_warnings": true,
-    "no_clip_right_edge": true,
-    "no_clip_bottom": true
   }
 }
