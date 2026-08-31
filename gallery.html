@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>deckgl-demos — gallery</title>
+<style>
+:root{
+  --bg:#fbfaf8; --panel:#fff; --ink:#16181d; --muted:#5f6570; --faint:#8b929e;
+  --line:#e3e1dc; --accent:#2f6f5e; --chip:#eef1ef; --code:#f6f5f2;
+  --shadow:0 1px 2px rgba(20,22,26,.05),0 8px 24px -12px rgba(20,22,26,.18);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){
+  --bg:#0f1114; --panel:#161a1f; --ink:#e8eaee; --muted:#a2abb8; --faint:#727d8c;
+  --line:#262c34; --accent:#6fd3b0; --chip:#1d232a; --code:#12161a;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px -14px rgba(0,0,0,.7);
+}}
+:root[data-theme=dark]{
+  --bg:#0f1114; --panel:#161a1f; --ink:#e8eaee; --muted:#a2abb8; --faint:#727d8c;
+  --line:#262c34; --accent:#6fd3b0; --chip:#1d232a; --code:#12161a;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px -14px rgba(0,0,0,.7);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:15px/1.6 ui-sans-serif,-apple-system,"Segoe UI",Inter,system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased}
+.wrap{max-width:1240px;margin:0 auto;padding:56px 28px 96px}
+header{border-bottom:1px solid var(--line);padding-bottom:28px;margin-bottom:40px}
+h1{margin:0;font-size:30px;letter-spacing:-.02em;font-weight:650}
+.tagline{margin:10px 0 0;color:var(--muted);max-width:70ch;font-size:16px}
+.meta{margin-top:20px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.pill{font:12px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);
+  background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:6px 11px}
+.pill b{color:var(--ink);font-weight:600}
+.grid{display:grid;gap:26px;grid-template-columns:repeat(auto-fill,minmax(360px,1fr))}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+  overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column}
+.shot{margin:0;padding:16px;display:flex;flex-direction:column;gap:10px;
+  align-items:center;justify-content:center;height:250px;border-bottom:1px solid var(--line)}
+.shot.tall{height:400px}
+.shot.checker{background-color:#f2f1ee;background-image:
+  linear-gradient(45deg,#e2e0dc 25%,transparent 25%,transparent 75%,#e2e0dc 75%),
+  linear-gradient(45deg,#e2e0dc 25%,transparent 25%,transparent 75%,#e2e0dc 75%);
+  background-size:16px 16px;background-position:0 0,8px 8px}
+.shot.dark{background:#11151a}
+.shot.light{background:#fff}
+.shot img,.shot video{max-width:100%;max-height:100%;width:auto;height:auto;
+  object-fit:contain;display:block;border-radius:3px}
+.shot.multi img{max-height:calc(50% - 5px)}
+.shot .missing{color:var(--faint);font-size:13px;font-style:italic;text-align:center}
+.body{padding:18px 20px 20px;display:flex;flex-direction:column;gap:10px;flex:1}
+.idx{font:11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--faint);
+  letter-spacing:.09em;text-transform:uppercase}
+h2{margin:0;font-size:17px;font-weight:620;letter-spacing:-.01em}
+.blurb{margin:0;color:var(--muted);font-size:14px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+.tag{font:11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);
+  background:var(--chip);border-radius:5px;padding:4px 7px}
+details{margin-top:auto;border-top:1px solid var(--line);padding-top:12px}
+summary{cursor:pointer;font:12px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+  color:var(--accent);list-style:none;user-select:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"▸ ";display:inline-block;transition:transform .15s}
+details[open] summary::before{content:"▾ "}
+pre{margin:12px 0 0;background:var(--code);border:1px solid var(--line);border-radius:8px;
+  padding:14px;overflow-x:auto;font:12px/1.65 ui-monospace,SFMono-Regular,Menlo,monospace;
+  max-height:440px;overflow-y:auto}
+pre .c{color:var(--faint);font-style:italic}
+pre .s{color:var(--accent)}
+pre .n{color:#b1784f}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) pre .n{color:#d8a06a}}
+:root[data-theme=dark] pre .n{color:#d8a06a}
+.extra{font:11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--faint)}
+footer{margin-top:56px;padding-top:22px;border-top:1px solid var(--line);
+  color:var(--faint);font-size:13px}
+footer code{background:var(--chip);border-radius:4px;padding:2px 6px;
+  font:12px/1 ui-monospace,SFMono-Regular,Menlo,monospace}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>deckgl-demos</h1>
+    <p class="tagline">Twelve self-contained deck.gl scenes spanning GPU aggregation, animated trajectories, geographic flows, contours, parcels, labels and point fields — no basemap, no runtime network dependency.</p>
+    <div class="meta"><span class="pill">deck.gl</span><span class="pill"><b>12</b> demos</span><span class="pill"><b>12</b> rendered</span></div>
+  </header>
+  <main class="grid">
+      <article class="card">
+        <figure class="shot dark"><img src="out/hexagons-transparent.png" alt="Hexagons" loading="lazy"></figure>
+        <div class="body">
+          <div class="idx">01 · aggregation</div>
+          <h2>Hexagons</h2>
+          <p class="blurb">Where does urban activity concentrate in 3D?</p>
+          <div class="tags"><span class="tag">hexagon</span><span class="tag">gpu</span><span class="tag">density</span><span class="tag">advanced</span></div>
+          <details><summary>src/main.ts</summary><pre><code>if (scene === <span class="s">&#x27;hexagons&#x27;</span>) {
+  const points = makePoints();
+  itemCount = points.length;
+  deck = new Deck({
+    ...commonProps(),
+    views: new OrbitView({orbitAxis: <span class="s">&#x27;Y&#x27;</span>, clearColor: [<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>]}),
+    initialViewState: {target: [<span class="n">4</span>, <span class="n">4</span>, <span class="n">0</span>], rotationX: <span class="n">35</span>, rotationOrbit: <span class="n">25</span>, zoom: exportMode ? <span class="n">2.35</span> : <span class="n">2.65</span>, minZoom: <span class="n">1</span>, maxZoom: <span class="n">7</span>},
+    layers: [new HexagonLayer&lt;Point&gt;({
+      id: <span class="s">&#x27;density-hexagons&#x27;</span>, data: points, getPosition: d =&gt; d.position, getColorWeight: d =&gt; d.weight,
+      getElevationWeight: d =&gt; d.weight, elevationScale: <span class="n">0.08</span>, extruded: true, radius: <span class="n">1.75</span>,
+      colorScaleType: <span class="s">&#x27;quantile&#x27;</span>,
+      colorRange: [[<span class="n">21</span>, <span class="n">60</span>, <span class="n">101</span>], [<span class="n">22</span>, <span class="n">116</span>, <span class="n">131</span>], [<span class="n">35</span>, <span class="n">168</span>, <span class="n">181</span>], [<span class="n">140</span>, <span class="n">201</span>, <span class="n">138</span>], [<span class="n">255</span>, <span class="n">224</span>, <span class="n">102</span>], [<span class="n">237</span>, <span class="n">91</span>, <span class="n">77</span>]],
+      pickable: true, opacity: <span class="n">0.92</span>, material: {ambient: <span class="n">0.55</span>, diffuse: <span class="n">0.62</span>, shininess: <span class="n">28</span>, specularColor: [<span class="n">80</span>, <span class="n">100</span>, <span class="n">100</span>]}
+    })]
+  });
+</code></pre></details>
+        </div>
+      </article>
+      <article class="card">
+        <figure class="shot dark"><img src="out/trips-transparent.png" alt="Trips" loading="lazy"></figure>
+        <div class="body">
+          <div class="idx">02 · temporal motion</div>
+          <h2>Trips</h2>
+          <p class="blurb">How do directional mobility waves evolve through time?</p>
+          <div class="tags"><span class="tag">trips</span><span class="tag">animation</span><span class="tag">paths</span><span class="tag">advanced</span></div>
+          <details><summary>src/main.ts</summary><pre><code>} else if (scene === <span class="s">&#x27;trips&#x27;</span>) {
+  const trips = makeTrips();
+  itemCount = trips.length;
+  const palette = [[<span class="n">98</span>, <span class="n">214</span>, <span class="n">198</span>], [<span class="n">246</span>, <span class="n">182</span>, <span class="n">81</span>], [<span class="n">222</span>, <span class="n">97</span>, <span class="n">134</span>]];
+  const baseLayer = new PathLayer&lt;Trip&gt;({
+    id: <span class="s">&#x27;street-context&#x27;</span>, data: trips.filter((_, index) =&gt; index % <span class="n">20</span> === <span class="n">0</span>), getPath: d =&gt; d.path,
+    getColor: [<span class="n">31</span>, <span class="n">82</span>, <span class="n">91</span>, <span class="n">70</span>], getWidth: <span class="n">0.55</span>, widthMinPixels: <span class="n">0.45</span>
+  });
+  const renderTrips = () =&gt; new TripsLayer&lt;Trip&gt;({
+    id: <span class="s">&#x27;moving-trips&#x27;</span>, data: trips, getPath: d =&gt; d.path, getTimestamps: d =&gt; d.timestamps,
+    getColor: d =&gt; palette[d.cohort] as [number, number, number], opacity: <span class="n">0.85</span>, widthMinPixels: <span class="n">1.5</span>,
+    trailLength: <span class="n">26</span>, currentTime: frame / <span class="n">3</span>, capRounded: true, jointRounded: true
+  });
+  deck = new Deck({
+    ...commonProps(), views: new OrthographicView({clearColor: [<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>]}),
+    initialViewState: {target: [<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>], zoom: exportMode ? <span class="n">2.65</span> : <span class="n">2.9</span>, minZoom: <span class="n">1.5</span>, maxZoom: <span class="n">7</span>},
+    layers: [baseLayer, renderTrips()]
+  });
+  const animate = () =&gt; {
+    if (!paused) frame = (frame + <span class="n">1</span>) % <span class="n">540</span>;
+    deck.setProps({layers: [baseLayer, renderTrips()]});
+    syncInfo();
+    requestAnimationFrame(animate);
+  };
+  requestAnimationFrame(animate);
+  document.querySelector&lt;HTMLButtonElement&gt;(<span class="s">&#x27;#motion&#x27;</span>)!.addEventListener(<span class="s">&#x27;click&#x27;</span>, event =&gt; {
+    paused = !paused;
+    (event.currentTarget as HTMLButtonElement).textContent = paused ? <span class="s">&#x27;Resume animation&#x27;</span> : <span class="s">&#x27;Pause animation&#x27;</span>;
+  });
+</code></pre></details>
+        </div>
+      </article>
+      <article class="card">
+        <figure class="shot dark"><img src="out/flows-transparent.png" alt="Flows" loading="lazy"></figure>
+        <div class="body">
+          <div class="idx">03 · network flow</div>
+          <h2>Flows</h2>
+          <p class="blurb">Which distributed routes carry the most traffic?</p>
+          <div class="tags"><span class="tag">paths</span><span class="tag">network</span><span class="tag">flow</span><span class="tag">advanced</span></div>
+          <details><summary>src/main.ts</summary><pre><code>} else if (scene === <span class="s">&#x27;flows&#x27;</span>) {
+  itemCount = flows.length;
+  deck = new Deck({
+    ...commonProps(), views: new OrthographicView({clearColor: [<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>]}),
+    initialViewState: {target: [<span class="n">0</span>, <span class="n">0</span>, <span class="n">0</span>], zoom: exportMode ? <span class="n">3.0</span> : <span class="n">3.15</span>, minZoom: <span class="n">1</span>, maxZoom: <span class="n">7</span>},
+    layers: [
+      new PathLayer&lt;typeof flows[number]&gt;({
+        id: <span class="s">&#x27;global-flows&#x27;</span>, data: flows, getPath: d =&gt; d.path,
+        getColor: d =&gt; d.value &gt; <span class="n">120</span> ? [<span class="n">237</span>, <span class="n">91</span>, <span class="n">77</span>] : d.value &gt; <span class="n">70</span> ? [<span class="n">246</span>, <span class="n">182</span>, <span class="n">81</span>] : [<span class="n">35</span>, <span class="n">168</span>, <span class="n">181</span>],
+        getWidth: d =&gt; <span class="n">2</span> + d.value / <span class="n">35</span>, widthUnits: <span class="s">&#x27;pixels&#x27;</span>, widthMinPixels: <span class="n">2.2</span>,
+        rounded: true, jointRounded: true, opacity: <span class="n">0.82</span>, pickable: true
+      }),
+      new ScatterplotLayer&lt;typeof networkNodes[number]&gt;({
+        id: <span class="s">&#x27;city-nodes&#x27;</span>, data: networkNodes, getPosition: d =&gt; d.position, getRadius: <span class="n">2.4</span>,
+        radiusMinPixels: <span class="n">3</span>, radiusMaxPixels: <span class="n">11</span>, getFillColor: [<span class="n">238</span>, <span class="n">244</span>, <span class="n">239</span>], getLineColor: [<span class="n">17</span>, <span class="n">109</span>, <span class="n">111</span>],
+        stroked: true, lineWidthMinPixels: <span class="n">2</span>, pickable: true
+      })
+    ]
+  });
+} else {
+  const points=makePoints(scene===<span class="s">&#x27;heat-islands&#x27;</span>?<span class="n">75</span>_000:scene===<span class="s">&#x27;constellation&#x27;</span>?<span class="n">20</span>_000:<span class="n">18</span>_000);
+  const parcels=Array.from({length:<span class="n">180</span>},(_,i)=&gt;{const x=(i%<span class="n">18</span>-<span class="n">9</span>)*<span class="n">5.4</span>,y=(Math.floor(i/<span class="n">18</span>)-<span class="n">5</span>)*<span class="n">5.2</span>,w=<span class="n">3.3</span>+(i%<span class="n">4</span>)*.<span class="n">35</span>,h=<span class="n">3.1</span>+(i%<span class="n">3</span>)*.<span class="n">5</span>;return {polygon:[[x-w,y-h],[x+w,y-h],[x+w,y+h],[x-w,y+h]],height:<span class="n">2</span>+((i*<span class="n">17</span>)%<span class="n">18</span>),kind:i%<span class="n">5</span>};});
+  const hubs=networkNodes.map((d,i)=&gt;({...d,value:<span class="n">30</span>+(i*<span class="n">37</span>)%<span class="n">170</span>}));
+  const branches=Array.from({length:<span class="n">90</span>},(_,i)=&gt;{const order=<span class="n">1</span>+i%<span class="n">5</span>,x=(i%<span class="n">9</span>-<span class="n">4</span>)*<span class="n">12</span>,y=<span class="n">34</span>-Math.floor(i/<span class="n">9</span>)*<span class="n">7</span>;return {order,path:Array.from({length:<span class="n">18</span>},(_,k):[number,number]=&gt;[x+(k-<span class="n">9</span>)*<span class="n">2.4</span>/order+Math.sin(k*.<span class="n">7</span>+i)*<span class="n">2</span>,y-k*<span class="n">2.5</span>+Math.sin(k*.<span class="n">3</span>+i)*<span class="n">4</span>])};});
+  let layers:any[]=[];let view:any={target:[<span class="n">0</span>,<span class="n">0</span>,<span class="n">0</span>],zoom:<span class="n">2.7</span>,minZoom:<span class="n">1</span>,maxZoom:<span class="n">7</span>};itemCount=points.length;
+</code></pre></details>
+        </div>
+      </article>
+      <article class="card">
+        <figure class="shot dark"><img src="out/grid-cells-transparent.png" alt="Grid cells" loading="lazy"></figure>
+        <div class="body">
+          <div class="idx">04 · aggregation</div>
+          <h2>Grid cells</h2>
+          <p class="blurb">How does a regular grid compare density and elevation?</p>
+          <div class="tags"><span class="tag">grid</span><span class="tag">aggregation</span><span class="tag">3d</span><span class="tag">advanced</span></div>
+          <details><summary>src/main.ts</summary><pre><code>  if(scene===<span class="s">&#x27;grid-cells&#x27;</span>)layers=[new GridLayer&lt;Point&gt;({id:scene,data:points,getPosition:d=&gt;d.position,getColorWeight:d=&gt;d.weight,getElevationWeight:d=&gt;d.weight,cellSize:<span class="n">3.2</span>,extruded:true,elevationScale:.<span class="n">12</span>,colorRange:[[<span class="n">18</span>,<span class="n">48</span>,<span class="n">83</span>],[<span class="n">36</span>,<span class="n">91</span>,<span class="n">125</span>],[<span class="n">62</span>,<span class="n">151</span>,<span class="n">154</span>],[<span class="n">84</span>,<span class="n">214</span>,<span class="n">198</span>],[<span class="n">255</span>,<span class="n">209</span>,<span class="n">102</span>],[<span class="n">255</span>,<span class="n">111</span>,<span class="n">145</span>]],opacity:.<span class="n">86</span>})];
+</code></pre></details>
+        </div>
+      </article>
+      <article class="card">
+        <figure class="shot dark"><img src="out/heat-islands-transparent.png" alt="Heat islands" loading="lazy"></figure>
+        <div class="body">
+          <div class="idx">05 · continuous density</div>
+          <h2>Heat islands</h2>
+          <p class="blurb">Where do several heat sources overlap spatially?</p>
+          <div class="tags"><span class="tag">heatmap</span><span class="tag">density</span><span class="tag">field</span><span class="tag">advanced</span></div>
+          <details><summary>src/main.ts</summary><pre><code>  if(scene===<span class="s">&#x27;heat-islands&#x27;</span>)layers=[new HeatmapLayer&lt;Point&gt;({id:scene,data:points,getPosition:d=&gt;d.position,getWeight:d=&gt;d.weight,radiusPixels:<span class="n">48</span>,intensity:<span class="n">1.6</span>,threshold:.<span class="n">04</span>,colorRange:[[<span class="n">14</span>,<span class="n">29</span>,<span class="n">52</span>,<span class="n">0</span>],[<span class="n">41</span>,<span class="n">72</span>,<span class="n">122</span>,<span class="n">120</span>],[<span class="n">84</span>,<span class="n">214</span>,<span class="n">198</span>,<span class="n">190</span>],[<span class="n">255</span>,<span class="n">209</span>,<span class="n">102</span>,<span class="n">220</span>],[<span class="n">255</span>,<span class="n">111</span>,<span class="n">145</span>,<span class="n">245</span>]]})];
+</code></pre></details>
+        </div>
+      </article>
+      <article class="card">
+        <figure class="shot dark"><img src="out/contour-pressure-transparent.png" alt="Contour pressure" loading="lazy"></figure>
+        <div class="body">
+          <div class="idx">06 · scalar field</div>
+          <h2>Contour pressure</h2>
+          <p class="blurb">Which pressure thresholds define nested regions?</p>
+          <div class="tags"><span class="tag">contour</span><span class="tag">threshold</span><span class="tag">field</span><span class="tag">advanced</span></div>
+          <details><summary>src/main.ts</summary><pre><code>  if(scene===<span class="s">&#x27;contour-pressure&#x27;</span>)layers=[new ContourLayer&lt;Point&gt;({id:scene,data:points,getPosition:d=&gt;d.position,getWeight:d=&gt;d.weight,cellSize:<span class="n">5</span>,contours:[{threshold:<span class="n">1</span>,color:[<span class="n">84</span>,<span class="n">214</span>,<span class="n">198</span>],strokeWidth:<span class="n">2</span>},{threshold:<span class="n">3</span>,color:[<span class="n">123</span>,<span class="n">156</span>,<span class="n">255</span>],strokeWidth:<span class="n">3</span>},{threshold:[<span class="n">5</span>,<span class="n">9</span>],color:[<span class="n">255</span>,<span class="n">111</span>,<span class="n">145</span>,<span class="n">100</span>]},{threshold:[<span class="n">9</span>,<span class="n">14</span>],color:[<span class="n">255</span>,<span class="n">209</span>,<span class="n">102</span>,<span class="n">110</span>]}]})];
+</code></pre></details>
+        </div>
+      </article>
+      <article class="card">
+        <figure class="shot dark"><img src="out/migration-arcs-transparent.png" alt="Migration arcs" loading="lazy"></figure>
+        <div class="body">
+          <div class="idx">07 · origin-destination</div>
+          <h2>Migration arcs</h2>
+          <p class="blurb">How do migration corridors connect regional hubs?</p>
+          <div class="tags"><span class="tag">arc</span><span class="tag">origin-destination</span><span class="tag">routes</span><span class="tag">advanced</span></div>
+          <details><summary>src/main.ts</summary><pre><code>  if(scene===<span class="s">&#x27;migration-arcs&#x27;</span>){itemCount=flows.length;layers=[new ArcLayer&lt;any&gt;({id:scene,data:flows,getSourcePosition:d=&gt;d.source.position,getTargetPosition:d=&gt;d.target.position,getSourceColor:d=&gt;d.value&gt;<span class="n">100</span>?[<span class="n">255</span>,<span class="n">111</span>,<span class="n">145</span>]:[<span class="n">84</span>,<span class="n">214</span>,<span class="n">198</span>],getTargetColor:[<span class="n">255</span>,<span class="n">209</span>,<span class="n">102</span>],getWidth:d=&gt;<span class="n">1</span>+d.value/<span class="n">45</span>,widthMinPixels:<span class="n">1.5</span>,greatCircle:false,opacity:.<span class="n">7</span>}),new ScatterplotLayer({id:<span class="s">&#x27;hubs&#x27;</span>,data:hubs,getPosition:(d:any)=&gt;d.position,getRadius:(d:any)=&gt;<span class="n">1</span>+d.value/<span class="n">45</span>,radiusMinPixels:<span class="n">4</span>,getFillColor:[<span class="n">235</span>,<span class="n">247</span>,<span class="n">255</span>],getLineColor:[<span class="n">84</span>,<span class="n">214</span>,<span class="n">198</span>],stroked:true,lineWidthMinPixels:<span class="n">2</span>})];}
+</code></pre></details>
+        </div>
+      </article>
+      <article class="card">
+        <figure class="shot dark"><img src="out/parcel-zoning-transparent.png" alt="Parcel zoning" loading="lazy"></figure>
+        <div class="body">
+          <div class="idx">08 · polygon map</div>
+          <h2>Parcel zoning</h2>
+          <p class="blurb">How can land-use classes and intensity coexist?</p>
+          <div class="tags"><span class="tag">polygon</span><span class="tag">zoning</span><span class="tag">extrusion</span><span class="tag">advanced</span></div>
+          <details><summary>src/main.ts</summary><pre><code>  if(scene===<span class="s">&#x27;parcel-zoning&#x27;</span>){itemCount=parcels.length;layers=[new PolygonLayer({id:scene,data:parcels,getPolygon:(d:any)=&gt;d.polygon,getElevation:(d:any)=&gt;d.height,extruded:true,getFillColor:(d:any)=&gt;[[<span class="n">84</span>,<span class="n">214</span>,<span class="n">198</span>],[<span class="n">123</span>,<span class="n">156</span>,<span class="n">255</span>],[<span class="n">255</span>,<span class="n">111</span>,<span class="n">145</span>],[<span class="n">255</span>,<span class="n">209</span>,<span class="n">102</span>],[<span class="n">184</span>,<span class="n">137</span>,<span class="n">255</span>]][d.kind] as [number,number,number],getLineColor:[<span class="n">220</span>,<span class="n">242</span>,<span class="n">250</span>],lineWidthMinPixels:<span class="n">1</span>,wireframe:true,opacity:.<span class="n">62</span>})];view={target:[<span class="n">0</span>,<span class="n">0</span>,<span class="n">0</span>],rotationX:<span class="n">38</span>,rotationOrbit:<span class="n">28</span>,zoom:<span class="n">3.1</span>};}
+</code></pre></details>
+        </div>
+      </article>
+      <article class="card">
+        <figure class="shot dark"><img src="out/constellation-transparent.png" alt="Constellation" loading="lazy"></figure>
+        <div class="body">
+          <div class="idx">09 · point cloud</div>
+          <h2>Constellation</h2>
+          <p class="blurb">How can thousands of objects preserve clusters and outliers?</p>
+          <div class="tags"><span class="tag">scatterplot</span><span class="tag">clusters</span><span class="tag">selection</span><span class="tag">advanced</span></div>
+          <details><summary>src/main.ts</summary><pre><code>  if(scene===<span class="s">&#x27;constellation&#x27;</span>)layers=[new ScatterplotLayer&lt;Point&gt;({id:scene,data:points,getPosition:d=&gt;d.position,getRadius:d=&gt;.<span class="n">4</span>+d.weight*.<span class="n">5</span>,radiusMinPixels:<span class="n">1</span>,radiusMaxPixels:<span class="n">9</span>,getFillColor:d=&gt;d.weight&gt;<span class="n">2</span>?[<span class="n">255</span>,<span class="n">111</span>,<span class="n">145</span>]:d.weight&gt;<span class="n">1.3</span>?[<span class="n">255</span>,<span class="n">209</span>,<span class="n">102</span>]:[<span class="n">84</span>,<span class="n">214</span>,<span class="n">198</span>],opacity:.<span class="n">55</span>,stroked:true,getLineColor:[<span class="n">220</span>,<span class="n">244</span>,<span class="n">250</span>],lineWidthMinPixels:.<span class="n">4</span>})];
+</code></pre></details>
+        </div>
+      </article>
+      <article class="card">
+        <figure class="shot dark"><img src="out/river-network-transparent.png" alt="River network" loading="lazy"></figure>
+        <div class="body">
+          <div class="idx">10 · path topology</div>
+          <h2>River network</h2>
+          <p class="blurb">How can branching stream order drive width and color?</p>
+          <div class="tags"><span class="tag">paths</span><span class="tag">river</span><span class="tag">topology</span><span class="tag">advanced</span></div>
+          <details><summary>src/main.ts</summary><pre><code>  if(scene===<span class="s">&#x27;river-network&#x27;</span>){itemCount=branches.length;layers=[new PathLayer({id:scene,data:branches,getPath:(d:any)=&gt;d.path,getWidth:(d:any)=&gt;d.order*.<span class="n">9</span>,widthMinPixels:<span class="n">1</span>,getColor:(d:any)=&gt;d.order&gt;<span class="n">3</span>?[<span class="n">84</span>,<span class="n">214</span>,<span class="n">198</span>]:[<span class="n">72</span>,<span class="n">120</span>+d.order*<span class="n">20</span>,<span class="n">190</span>],rounded:true,jointRounded:true,opacity:.<span class="n">72</span>})];}
+</code></pre></details>
+        </div>
+      </article>
+      <article class="card">
+        <figure class="shot dark"><img src="out/sensor-field-transparent.png" alt="Sensor field" loading="lazy"></figure>
+        <div class="body">
+          <div class="idx">11 · multivariate glyphs</div>
+          <h2>Sensor field</h2>
+          <p class="blurb">How can size, color, and position encode sensor state together?</p>
+          <div class="tags"><span class="tag">scatterplot</span><span class="tag">sensors</span><span class="tag">multivariate</span><span class="tag">advanced</span></div>
+          <details><summary>src/main.ts</summary><pre><code>  if(scene===<span class="s">&#x27;sensor-field&#x27;</span>)layers=[new ScatterplotLayer&lt;Point&gt;({id:scene,data:points.slice(<span class="n">0</span>,<span class="n">2500</span>),getPosition:d=&gt;d.position,getRadius:d=&gt;.<span class="n">8</span>+d.weight*<span class="n">1.2</span>,radiusMinPixels:<span class="n">2</span>,radiusMaxPixels:<span class="n">14</span>,getFillColor:d=&gt;d.weight&gt;<span class="n">2.2</span>?[<span class="n">255</span>,<span class="n">111</span>,<span class="n">145</span>]:d.weight&gt;<span class="n">1.2</span>?[<span class="n">255</span>,<span class="n">209</span>,<span class="n">102</span>]:[<span class="n">84</span>,<span class="n">214</span>,<span class="n">198</span>],getLineColor:d=&gt;d.weight&gt;<span class="n">2.2</span>?[<span class="n">255</span>,<span class="n">230</span>,<span class="n">235</span>]:[<span class="n">180</span>,<span class="n">220</span>,<span class="n">235</span>],stroked:true,lineWidthMinPixels:<span class="n">1.2</span>,opacity:.<span class="n">7</span>})];
+</code></pre></details>
+        </div>
+      </article>
+      <article class="card">
+        <figure class="shot dark"><img src="out/label-atlas-transparent.png" alt="Label atlas" loading="lazy"></figure>
+        <div class="body">
+          <div class="idx">12 · annotation</div>
+          <h2>Label atlas</h2>
+          <p class="blurb">How can dense labels remain attached to spatial features?</p>
+          <div class="tags"><span class="tag">text</span><span class="tag">labels</span><span class="tag">atlas</span><span class="tag">advanced</span></div>
+          <details><summary>src/main.ts</summary><pre><code>  if(scene===<span class="s">&#x27;label-atlas&#x27;</span>){itemCount=hubs.length;layers=[new ScatterplotLayer({id:<span class="s">&#x27;features&#x27;</span>,data:hubs,getPosition:(d:any)=&gt;d.position,getRadius:(d:any)=&gt;<span class="n">2</span>+d.value/<span class="n">90</span>,radiusMinPixels:<span class="n">4</span>,getFillColor:(d:any)=&gt;d.value&gt;<span class="n">100</span>?[<span class="n">255</span>,<span class="n">111</span>,<span class="n">145</span>]:[<span class="n">84</span>,<span class="n">214</span>,<span class="n">198</span>]}),new TextLayer({id:<span class="s">&#x27;labels&#x27;</span>,data:hubs,getPosition:(d:any)=&gt;d.position,getText:(d:any)=&gt;d.name,getSize:<span class="n">16</span>,getColor:[<span class="n">225</span>,<span class="n">242</span>,<span class="n">250</span>],getPixelOffset:[<span class="n">0</span>,-<span class="n">18</span>],fontFamily:<span class="s">&#x27;Avenir Next&#x27;</span>,fontWeight:<span class="n">600</span>,outlineWidth:<span class="n">3</span>,outlineColor:[<span class="n">8</span>,<span class="n">18</span>,<span class="n">32</span>,<span class="n">220</span>]})];}
+  const orbit=scene===<span class="s">&#x27;parcel-zoning&#x27;</span>;deck=new Deck({...commonProps(),views:orbit?new OrbitView({orbitAxis:<span class="s">&#x27;Y&#x27;</span>,clearColor:[<span class="n">0</span>,<span class="n">0</span>,<span class="n">0</span>,<span class="n">0</span>]}):new OrthographicView({clearColor:[<span class="n">0</span>,<span class="n">0</span>,<span class="n">0</span>,<span class="n">0</span>]}),initialViewState:view,layers});
+}
+
+document.querySelector(<span class="s">&#x27;#items&#x27;</span>)!.textContent = itemCount &gt;= <span class="n">1000</span> ? `${(itemCount / <span class="n">1000</span>).toFixed(itemCount &gt;= <span class="n">10000</span> ? <span class="n">0</span> : <span class="n">1</span>)}k` : String(itemCount);
+syncInfo();
+
+window.addEventListener(<span class="s">&#x27;beforeunload&#x27;</span>, () =&gt; deck.finalize());
+</code></pre></details>
+        </div>
+      </article>
+  </main>
+  <footer>
+    Generated by <code>tools/gallery.py</code> — regenerate with <code>just gallery</code>
+    after <code>just build</code>. Images are referenced from
+    <code>out/</code>, so open this file straight from the checkout.
+  </footer>
+</div>
+</body>
+</html>

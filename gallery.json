@@ -1,0 +1,9 @@
+{
+  "title": "deckgl-demos",
+  "library": "deck.gl",
+  "tagline": "Twelve self-contained deck.gl scenes spanning GPU aggregation, animated trajectories, geographic flows, contours, parcels, labels and point fields — no basemap, no runtime network dependency.",
+  "rebuild": "just build",
+  "backdrop": "dark",
+  "code_search": "src/main.ts",
+  "code_guard": "scene\\s*===\\s*'{id}'"
+}
