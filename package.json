@@ -7,8 +7,8 @@
     "dev": "vite --host 127.0.0.1",
     "typecheck": "tsc --noEmit",
     "build": "tsc --noEmit && vite build",
-    "render": "node scripts/validate.mjs --render-only",
-    "validate": "node scripts/validate.mjs",
+    "render": "node tools/validate.mjs --render-only",
+    "validate": "node tools/validate.mjs",
     "test": "npm run typecheck && npm run build && npm run validate"
   },
   "dependencies": {
