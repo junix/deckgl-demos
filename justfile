@@ -17,7 +17,7 @@ test: build
 
 # Browser demo repo — no binary, no launcher (ADR-749: nothing to install).
 install:
-    @echo "deckgl-examples: browser demos, nothing to install"
+    @echo "deckgl-demos: browser demos, nothing to install"
 
 # Re-render the captures without the full validate pass.
 render: build

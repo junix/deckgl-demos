@@ -1,4 +1,4 @@
-# deckgl-examples
+# deckgl-demos
 
 Twelve self-contained deck.gl reference scenes spanning GPU aggregation, animated trajectories, geographic flows, contours, parcels, labels, and point fields without a basemap or runtime network dependency.
 
