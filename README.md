@@ -2,6 +2,8 @@
 
 Twelve self-contained deck.gl reference scenes spanning GPU aggregation, animated trajectories, geographic flows, contours, parcels, labels, and point fields without a basemap or runtime network dependency.
 
+Browse every demo with its source in **[gallery.html](gallery.html)** — searchable, follows your light/dark theme.
+
 ```bash
 npm install
 npm run build && npm run render
