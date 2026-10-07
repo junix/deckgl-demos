@@ -8,6 +8,10 @@ type SceneName = 'hexagons' | 'trips' | 'flows' | 'grid-cells' | 'heat-islands' 
 type Point = {position: [number, number]; weight: number};
 type Trip = {path: [number, number][]; timestamps: number[]; cohort: number};
 
+// Single source of truth for the trips performance budget: the scene caption and
+// the generated dataset both derive from this constant.
+const tripCount = 900;
+
 const scenes: Record<SceneName, {title: string; subtitle: string; note: string}> = {
   hexagons: {
     title: 'GPU-aggregated urban pulse',
@@ -16,7 +20,7 @@ const scenes: Record<SceneName, {title: string; subtitle: string; note: string}>
   },
   trips: {
     title: 'Temporal mobility trails',
-    subtitle: '2,400 animated paths reveal directional waves through a synthetic street field.',
+    subtitle: `${tripCount.toLocaleString('en-US')} animated paths reveal directional waves through a synthetic street field.`,
     note: 'TripsLayer animates timestamped paths while a faint static network preserves spatial context.'
   },
   flows: {
@@ -53,7 +57,7 @@ function makePoints(count = 120_000): Point[] {
   });
 }
 
-function makeTrips(count = 900): Trip[] {
+function makeTrips(count = tripCount): Trip[] {
   return Array.from({length: count}, (_, index) => {
     const cohort = index % 3;
     const phase = pseudo(index, 3) * Math.PI * 2;

@@ -67,6 +67,9 @@ try {
     const before = await page.evaluate(() => ({...window.__plotDemo}));
     if (!before.itemCount || before.scene !== scene) failures.push(`${scene}: invalid runtime metadata`);
     if (scene === 'trips') {
+      const caption = (await page.locator('.subtitle').textContent()) ?? '';
+      const advertised = Number((caption.match(/([\d,]+)\s+animated paths/) ?? [])[1]?.replace(/,/g, ''));
+      if (advertised !== before.itemCount) failures.push(`trips: subtitle advertises ${caption.match(/([\d,]+)\s+animated paths/)?.[1] ?? 'no'} paths but the scene renders ${before.itemCount}`);
       await page.waitForTimeout(350);
       const after = await page.evaluate(() => window.__plotDemo?.frame ?? 0);
       if (after <= before.frame) failures.push('trips: animation frame did not advance');
