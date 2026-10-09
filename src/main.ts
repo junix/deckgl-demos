@@ -2,6 +2,7 @@ import {Deck, OrbitView, OrthographicView} from '@deck.gl/core';
 import {ArcLayer, PathLayer, PolygonLayer, ScatterplotLayer, TextLayer} from '@deck.gl/layers';
 import {ContourLayer, GridLayer, HeatmapLayer, HexagonLayer} from '@deck.gl/aggregation-layers';
 import {TripsLayer} from '@deck.gl/geo-layers';
+import {createTripClock, TRIP_EXPORT_TIME} from './tripClock';
 import './style.css';
 
 type SceneName = 'hexagons' | 'trips' | 'flows' | 'grid-cells' | 'heat-islands' | 'contour-pressure' | 'migration-arcs' | 'parcel-zoning' | 'constellation' | 'river-network' | 'sensor-field' | 'label-atlas';
@@ -163,7 +164,7 @@ const info = window.__plotDemo = {ready, scene, itemCount, frame, viewChanges, v
 
 function syncInfo(): void {
   Object.assign(info, {ready, itemCount, frame, viewChanges, viewState: lastViewState});
-  document.querySelector('#frame')!.textContent = String(frame);
+  document.querySelector('#frame')!.textContent = String(Math.floor(frame));
   document.querySelector('#changes')!.textContent = String(viewChanges);
 }
 
@@ -210,25 +211,30 @@ if (scene === 'hexagons') {
     id: 'street-context', data: trips.filter((_, index) => index % 20 === 0), getPath: d => d.path,
     getColor: [31, 82, 91, 70], getWidth: 0.55, widthMinPixels: 0.45
   });
+  const clock = createTripClock();
   const renderTrips = () => new TripsLayer<Trip>({
     id: 'moving-trips', data: trips, getPath: d => d.path, getTimestamps: d => d.timestamps,
     getColor: d => palette[d.cohort] as [number, number, number], opacity: 0.85, widthMinPixels: 1.5,
-    trailLength: 26, currentTime: frame / 3, capRounded: true, jointRounded: true
+    trailLength: 26, currentTime: exportMode ? TRIP_EXPORT_TIME : clock.time, capRounded: true, jointRounded: true
   });
   deck = new Deck({
     ...commonProps(), views: new OrthographicView({clearColor: [0, 0, 0, 0]}),
     initialViewState: {target: [0, 0, 0], zoom: exportMode ? 2.65 : 2.9, minZoom: 1.5, maxZoom: 7},
     layers: [baseLayer, renderTrips()]
   });
-  const animate = () => {
-    if (!paused) frame = (frame + 1) % 540;
+  // The rAF timestamp drives playback, so callback rate (30/60/120 Hz) cannot
+  // change trip speed. Export mode pins one deterministic timestamp instead.
+  const animate = (now: number) => {
+    clock.tick(now);
+    frame = clock.time;
     deck.setProps({layers: [baseLayer, renderTrips()]});
     syncInfo();
     requestAnimationFrame(animate);
   };
-  requestAnimationFrame(animate);
+  if (!exportMode) requestAnimationFrame(animate);
   document.querySelector<HTMLButtonElement>('#motion')!.addEventListener('click', event => {
     paused = !paused;
+    clock.setPaused(paused);
     (event.currentTarget as HTMLButtonElement).textContent = paused ? 'Resume animation' : 'Pause animation';
   });
 } else if (scene === 'flows') {

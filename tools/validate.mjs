@@ -74,6 +74,10 @@ try {
       const after = await page.evaluate(() => window.__plotDemo?.frame ?? 0);
       if (after <= before.frame) failures.push('trips: animation frame did not advance');
       await page.getByRole('button', {name: 'Pause animation'}).click();
+      const frozenAt = await page.evaluate(() => window.__plotDemo?.frame ?? 0);
+      await page.waitForTimeout(300);
+      const frozenAfter = await page.evaluate(() => window.__plotDemo?.frame ?? 0);
+      if (Math.abs(frozenAfter - frozenAt) > 1e-6) failures.push('trips: paused animation kept advancing');
     }
     const canvas = page.locator('canvas').first();
     const box = await canvas.boundingBox();
